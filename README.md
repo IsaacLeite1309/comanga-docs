@@ -1,50 +1,66 @@
 # CoMangá Docs
 
-Este repositório concentra os artefatos de documentação de engenharia do projeto CoMangá, uma plataforma para gerenciamento e catalogação de coleções físicas de mangás.
+Repositório da documentação técnica e acadêmica do CoMangá, plataforma para catalogação e gerenciamento de coleções físicas de mangás. Ele é a fonte de verdade para requisitos, regras de negócio, arquitetura, diagramas, critérios de aceite e planejamento de evolução.
 
-A documentação aqui registrada serve como base para alinhar requisitos, regras de negócio, arquitetura, modelagem, critérios de aceite e implementação dos repositórios de código do sistema.
+## O sistema documentado
+
+O CoMangá é composto por uma SPA React hospedada na Vercel e uma API REST Node.js/Express hospedada na Render. A API utiliza PostgreSQL no Neon, Prisma ORM, sessões stateful em cookie HttpOnly e Cloudflare R2 para capas internas processadas.
+
+```text
+React/Vercel -> API REST/Render -> PostgreSQL/Neon
+                              -> Cloudflare R2
+                              -> SMTP
+```
+
+Até o momento, estão implementados autenticação e sessões, administração de usuários/opções, Obras, Edições, Volumes, importação interna de capas, vitrine pública, detalhes públicos e listagem de Obras por Autor. Calendário, Estante Digital, Lista de Desejos, enriquecimento autenticado e a evolução para uma arquitetura distribuída permanecem planejados.
 
 ## Estrutura
 
-- `01-SERS/`: Especificação de Requisitos de Software.
-- `02-User-Stories/`: User Stories e critérios de aceite em Gherkin.
-- `03-ATAM/`: Cenários de análise arquitetural baseados nos requisitos não funcionais.
-- `04-DAS/`: Documento de Arquitetura de Software.
-- `05-Diagramas/`: Diagramas atualizados para a etapa N2.
+| Diretório | Conteúdo |
+| --- | --- |
+| [`01-SERS`](./01-SERS/) | Especificação de Requisitos de Software: requisitos funcionais e não funcionais, regras de negócio e restrições. |
+| [`02-User-Stories`](./02-User-Stories/) | Histórias de usuário e cenários Gherkin que orientam aceite e testes. |
+| [`03-ATAM`](./03-ATAM/) | Cenários de análise arquitetural e atributos de qualidade. |
+| [`04-DAS`](./04-DAS/) | Documento de Arquitetura de Software, com decisões efetivamente adotadas. |
+| [`05-Diagramas`](./05-Diagramas/) | Casos de uso, sequência, DER físico e classes ORM Prisma. |
+| [`06-Planejamento`](./06-Planejamento/) | Kanban, Definition of Done, sprints e plano geral de desenvolvimento. |
 
-## Principais artefatos
+## Artefatos principais
 
-### SERS
+- **SERS**: referência principal para comportamento esperado, segurança, privacidade e regras do domínio.
+- **User Stories e Gherkin**: tradução dos requisitos em cenários verificáveis de implementação.
+- **DAS**: apresenta a arquitetura cliente-servidor, o monólito modular atual, sessões, persistência, mídia, testes, deploy e limites conhecidos.
+- **ATAM**: apoia decisões relativas a desempenho, disponibilidade, confiabilidade, segurança e manutenibilidade.
+- **Diagramas**: mantêm a visão visual do domínio, dados e fluxos relevantes.
+- **Planejamento**: organiza os cartões por sprints, com critérios de aceite e o DoD adotado no projeto.
 
-Define os requisitos funcionais, requisitos não funcionais e regras de negócio do sistema. É a principal referência para entender o comportamento esperado da aplicação e as restrições que devem ser respeitadas pelo código.
+## Como a documentação orienta o código
 
-### User Stories + Gherkin
+1. Todo cartão deve partir de requisitos e regras presentes no SERS.
+2. Os cenários Gherkin devem orientar o TDD e os testes de integração/interface quando aplicáveis.
+3. Alterações de modelo devem preservar o DER, o schema Prisma e migrations novas - migrations aplicadas nunca são alteradas.
+4. Mudanças arquiteturais relevantes devem atualizar o DAS, os diagramas e o planejamento correspondente.
+5. A documentação deve distinguir claramente o que está implementado do que ainda é planejado.
 
-Traduz os requisitos em histórias de usuário, critérios de aceite e cenários comportamentais testáveis. Esses cenários orientam a implementação dos cartões e a criação dos testes automatizados.
+## Processo de desenvolvimento
 
-### ATAM
+- O trabalho ocorre em branches `feature/*`.
+- O fluxo usual é `feature/*` -> `develop` -> `main`, por pull request e CI verde.
+- O Definition of Done inclui testes, lint, build, integração cliente/servidor, estados de interface, segurança e atualização documental proporcional.
+- Há bancos Neon distintos para desenvolvimento, testes e deploy. Operações de migration devem sempre apontar para o ambiente correto.
+- Não há commits automáticos de alterações não revisadas ou de artefatos fora do escopo do cartão.
 
-Registra cenários de análise arquitetural baseados nos requisitos não funcionais do projeto, apoiando a avaliação de atributos de qualidade como segurança, desempenho, disponibilidade, manutenibilidade e confiabilidade.
+## Repositórios relacionados
 
-### DAS
+- [comanga-api](https://github.com/IsaacLeite1309/comanga-api) - API Node.js/Express, Prisma, PostgreSQL, sessão e mídia.
+- [comanga-web](https://github.com/IsaacLeite1309/comanga-web) - SPA React, TypeScript, Vite e Tailwind CSS.
 
-Descreve a arquitetura do sistema CoMangá, baseada na stack PERN: PostgreSQL, Express, React e Node.js. O documento também registra decisões arquiteturais sobre camadas, persistência, segurança, hospedagem e restrições do MVP.
+## Leitura recomendada
 
-### Diagramas
+Para entender o projeto a partir do zero, leia nesta ordem:
 
-Inclui os artefatos visuais atualizados para a N2:
-
-- Diagrama de Casos de Uso refinado.
-- Diagrama de Sequência do fluxo de login com sessão stateful.
-- DER físico do banco PostgreSQL.
-- Diagrama de Classes com mapeamento ORM via Prisma.
-
-## Relação com o código
-
-Esta documentação acompanha os repositórios:
-
-- `comanga-web`: frontend React.
-- `comanga-api`: backend Node.js/Express.
-- `comanga-docs`: documentação técnica e acadêmica.
-
-As decisões documentadas neste repositório devem orientar a implementação das funcionalidades, os testes automatizados, as migrations Prisma, os critérios de aceite dos cartões e a evolução da modelagem do projeto.
+1. SERS.
+2. User Stories e cenários Gherkin.
+3. DAS.
+4. DER e diagrama de classes Prisma.
+5. Cartões Kanban e plano geral de desenvolvimento.
