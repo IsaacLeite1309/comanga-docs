@@ -110,7 +110,7 @@ Visão do Produto: O CoMangá é uma aplicação web independente, projetada par
 - **Módulo:** Autenticação e Perfil de Usuário
 - **Prioridade:** Essencial
 - **RNs associadas:** RN0015, RN0016, RN0017
-- **Descrição:** O sistema deve processar a solicitação de redefinição de senha mediante o recebimento de um e-mail de acesso, resultando na geração de um token de verificação e no disparo de um e-mail vinculado a esse token.
+- **Descrição:** O sistema deve receber o e-mail de acesso e retornar a resposta neutra definida em RN0015. Somente para conta elegível conforme RN0016, deve gerar um token de verificação com validade de 1 hora e enviar o link de recuperação, sem revelar na resposta a existência ou o status da conta.
 
 #### RF0007 — Redefinir senha de acesso via token de redefinição
 
@@ -502,20 +502,20 @@ Visão do Produto: O CoMangá é uma aplicação web independente, projetada par
 - **RFs dependentes:** RF0004, RF0005, RF0007, RF0008
 - **Descrição:** A autenticação deve utilizar sessão stateful persistida no servidor. A cada login bem-sucedido, o sistema deve gerar um identificador opaco e criptograficamente seguro, armazenar somente seu hash na tabela de sessões e enviar o valor original ao cliente por cookie HttpOnly. A sessão deve ser considerada válida apenas enquanto existir, não estiver revogada e estiver vinculada a uma conta apta ao acesso. O ciclo de vida da sessão deve ser encerrado, no mínimo, nas seguintes situações: Logout explícito do usuário. Redefinição ou alteração de senha, quando aplicável. Exclusão da conta. Caso uma rota protegida receba uma sessão ausente, inválida ou revogada, o sistema deve retornar: "Sua sessão é inválida ou foi encerrada. Por favor, faça login novamente."
 
-#### RN0015 — Recusa da solicitação de redefinição de senha a contas inexistentes
+#### RN0015 — Resposta neutra à solicitação de redefinição de senha
 
 - **RFs dependentes:** RF0006
-- **Descrição:** Caso o usuário realize uma solicitação de redefinição de senha com um e-mail que não coincide com nenhum cadastro previamente cadastrado no banco de dados, o sistema deve recusar a transação e retornar uma mensagem de erro: “E-mail não cadastrado!”.
+- **Descrição:** Para uma solicitação com e-mail de formato válido e dentro do limite de solicitações, o sistema deve retornar HTTP 200 e a mensagem “Se houver uma conta apta para este e-mail, enviaremos as instruções de recuperação.”, independentemente da existência ou do status da conta e de falha no envio por SMTP. Um e-mail inexistente não deve gerar token nem disparo de mensagem. Não retornar campos, códigos ou detalhes que revelem se a conta existe ou se o e-mail foi enviado. Campos ausentes ou formato inválido podem retornar erro de validação; o limite de solicitações pode retornar HTTP 429 independentemente da existência da conta. Falhas técnicas devem ser registradas sem senhas, tokens ou credenciais.
 
-#### RN0016 — Recusa da solicitação de redefinição de senha a contas com status de acesso pendente
+#### RN0016 — Elegibilidade da conta para recuperação de senha
 
 - **RFs dependentes:** RF0006
-- **Descrição:** Caso o usuário realize uma solicitação de redefinição de senha em uma conta que está com o status de acesso “Pendente”, o sistema deve recusar a transação e retornar a mensagem de erro: “Ative a conta com o e-mail de verificação enviado anteriormente para alterar a senha.”
+- **Descrição:** Somente uma conta com status “Ativada” pode receber token e e-mail de recuperação. Para contas pendentes, bloqueadas ou com outro status não elegível, o sistema não deve gerar token nem enviar e-mail, mas deve retornar a mesma resposta neutra definida em RN0015. A recuperação não deve ativar uma conta pendente nem desbloquear uma conta bloqueada.
 
 #### RN0017 — Tempo de expiração do token de redefinição de senha de acesso
 
 - **RFs dependentes:** RF0006, RF0007
-- **Descrição:** O tempo de expiração do token de redefinição é de 1 hora. Se o usuário tentar redefinir a senha com um token expirado, o sistema deve recusar a transação, e retornar a mensagem de erro: "Este link de redefinição expirou. Solicite a redefinição novamente."
+- **Descrição:** O tempo de expiração do token de redefinição é de 1 hora após a geração; ao atingir a data de expiração, ele já é inválido. O token deve ser criptograficamente aleatório e persistido somente como hash em estrutura própria, separada dos tokens de ativação. O valor bruto deve existir apenas na geração e no link de recuperação, nunca em logs ou respostas da API. Se o usuário tentar redefinir a senha com um token expirado, o sistema deve recusar a transação e retornar a mensagem de erro: "Este link de redefinição expirou. Solicite a redefinição novamente."
 
 #### RN0018 — Invalidação por unicidade do token de redefinição
 
@@ -670,7 +670,7 @@ Visão do Produto: O CoMangá é uma aplicação web independente, projetada par
 #### RN0048 — Controle de acesso e omissão condicional de conteúdo adulto
 
 - **RFs dependentes:** RF0001, RF0011, RF0036, RF0037, RF0038, RF0039, RF0040, RF0041, RF0042
-- **Descrição:** A data de nascimento é dado privado da conta e não deve ser exposta no catálogo público. Toda nova conta deve iniciar com a preferência de exibição de conteúdo adulto desativada. O backend somente pode ativar essa preferência quando a data de nascimento for válida, não futura e o cálculo na data da solicitação indicar 18 anos completos. Visitantes, usuários com a preferência desativada e usuários que não atendam à maioridade devem receber conteúdo adulto omitido das áreas públicas. A área administrativa não deve aplicar essa ocultação. O sistema não deve persistir uma flag independente de maioridade; a idade deve ser calculada quando necessária.
+- **Descrição:** A data de nascimento é dado privado da conta e não deve ser exposta no catálogo público. Toda nova conta deve iniciar com a preferência de exibição de conteúdo adulto desativada. O backend somente pode ativar essa preferência quando a data de nascimento for válida, não futura e o cálculo na data da solicitação indicar 18 anos completos. Visitantes, usuários com a preferência desativada e usuários que não atendam à maioridade devem receber conteúdo adulto omitido das áreas públicas, inclusive em acesso direto por URL. Na área administrativa, administradores com sessão válida e papel autorizado podem consultar todo o catálogo, independentemente da idade e da preferência. Essa exceção não permite ativar a preferência pública para menores nem dispensa a validação de permissões administrativas. O sistema não deve persistir uma flag independente de maioridade; a idade deve ser calculada quando necessária.
 
 #### RN0049 — Preservação de contexto entre vitrines
 
