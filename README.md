@@ -23,7 +23,6 @@ Até o momento, estão implementados autenticação e sessões, administração 
 | [`03-ATAM`](./03-ATAM/) | Cenários de análise arquitetural e atributos de qualidade. |
 | [`04-DAS`](./04-DAS/) | Documento de Arquitetura de Software, com decisões efetivamente adotadas. |
 | [`05-Diagramas`](./05-Diagramas/) | Casos de uso, sequência, DER físico e classes ORM Prisma. |
-| [`06-Planejamento`](./06-Planejamento/) | Kanban, Definition of Done, sprints e plano geral de desenvolvimento. |
 
 ## Fontes Markdown
 
