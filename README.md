@@ -25,6 +25,16 @@ Até o momento, estão implementados autenticação e sessões, administração 
 | [`05-Diagramas`](./05-Diagramas/) | Casos de uso, sequência, DER físico e classes ORM Prisma. |
 | [`06-Planejamento`](./06-Planejamento/) | Kanban, Definition of Done, sprints e plano geral de desenvolvimento. |
 
+## Fontes Markdown
+
+As versões Markdown são as fontes de manutenção e leitura automatizada. Os PDF e DOCX continuam disponíveis como versões diagramadas para leitura e entrega humana.
+
+- [SERS](./01-SERS/SERS%20-%20CoMang%C3%A1%20-%20Revisado.md)
+- [User Stories e Cenários Gherkin](./02-User-Stories/User%20Stories%20e%20Cen%C3%A1rios%20Gherkin%20-%20CoMang%C3%A1.md)
+- [Cenários ATAM](./03-ATAM/Cen%C3%A1rios%20ATAM%20-%20CoManga.md)
+- [Documento de Arquitetura de Software](./04-DAS/DAS%20-%20CoManga%20-%20Atualizado.md)
+- [Diagramas](./05-Diagramas/README.md)
+
 ## Artefatos principais
 
 - **SERS**: referência principal para comportamento esperado, segurança, privacidade e regras do domínio.
