@@ -169,7 +169,7 @@ Usuário administrador 1 ----- 0..N Ativo de Mídia criado/importado
 ```
 
 ```text
-[IMPLEMENTADO] Atualmente, Obra, Edição e Volume possuem associação opcional com um Ativo de Mídia.
+[IMPLEMENTADO] No schema Prisma atual, Obra, Edição e Volume possuem associação opcional com um Ativo de Mídia; a criação de Volume já exige capa na API.
 
 [REGRA APROVADA] No estado desejado, cada Obra, Edição e Volume deve possuir exatamente uma capa interna válida.
   - Cadastro: exige capa válida.
@@ -245,7 +245,8 @@ arbitrariamente a um mês do calendário.
 ```text
 [PLANEJADO]
 1. Usuário solicita recuperação com o e-mail.
-2. API gera token seguro, com expiração, e envia link por SMTP.
+2. Para solicitação válida e dentro do limite, API devolve HTTP 200 com resposta neutra, inclusive para conta inexistente, pendente, bloqueada ou falha de SMTP.
+   Somente para conta ativada, gera token seguro com validade de 1 hora, persiste seu hash em estrutura própria e envia o link por SMTP.
 3. Usuário informa nova senha e confirmação pelo link.
 4. API valida token e senha, atualiza o hash da senha e invalida o token.
 5. API revoga as sessões ativas da conta.
@@ -257,12 +258,14 @@ Ela não deve reutilizar o token de ativação.
 ### Conteúdo adulto
 
 ```text
+[REGRA APROVADA; validação de idade ainda pendente de implementação]
 1. A data de nascimento é privada e não aparece no catálogo público.
 2. A preferência +18 nasce desativada.
 3. Quando o usuário tenta ativá-la, o backend calcula idade completa na data da solicitação.
 4. Se possuir menos de 18 anos, a API recusa a ativação.
 5. Visitantes, usuários com a preferência desativada e menores de idade recebem conteúdo adulto omitido.
-6. A área administrativa não aplica essa omissão de catálogo.
+6. Administradores com sessão e papel válidos consultam todo o catálogo na administração, independentemente da idade e da preferência.
+7. Essa exceção não permite ativar a preferência pública para menores nem dispensa a validação de permissões nas rotas administrativas.
 ```
 
 ### Importação e associação de capa
