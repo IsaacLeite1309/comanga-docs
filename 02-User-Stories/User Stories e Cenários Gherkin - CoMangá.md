@@ -32,6 +32,11 @@ And submeto o formulário de cadastro
 Then o sistema deve recusar a transação
 And deve exibir a mensagem de erro no campo de usuário: "Utilize entre 3 e 20 caracteres, sem espaços, acentos ou caracteres especiais."
 
+Scenario: Caminho Alternativo - Senha acima do limite de armazenamento (RN0002)
+When informo uma senha cuja codificação UTF-8 ultrapassa 72 bytes
+Then o sistema deve recusar a operação sem gravar a nova senha
+And deve explicar o limite de 72 bytes e que acentos e emojis podem ocupar mais de um byte
+
 Scenario: Caminho Alternativo 2 - Falha no cadastro por senha fora do padrão de força estrutural (RN0002)
 Given que eu sou um usuário visitante na tela de registro
 When eu preencho o campo de Senha e Confirmação de Senha com "fraca12"
@@ -246,12 +251,19 @@ When eu tento acessar o link ou submeter o token expirado para o sistema
 Then o sistema deve recusar a transação
 And deve retornar a mensagem de erro: "Este link de redefinição expirou. Solicite a redefinição novamente."
 
-Scenario: Caminho Alternativo 4 - Resposta neutra quando o SMTP falha (RN0015)
+Scenario: Caminho Alternativo 4 - Resposta neutra quando o serviço de e-mail falha (RN0015)
 Given que minha conta está ativada e a solicitação está dentro do limite permitido
-When eu solicito a recuperação com e-mail válido e ocorre uma falha no envio por SMTP
+When eu solicito a recuperação com e-mail válido e ocorre uma falha no serviço de e-mail
 Then o sistema deve retornar HTTP 200 com a mensagem "Se houver uma conta apta para este e-mail, enviaremos as instruções de recuperação."
 And não deve incluir indicador de envio nem detalhes técnicos na resposta
 And deve registrar a falha sem token, senha ou credenciais
+
+Scenario: Caminho Alternativo 5 - Preservar link entre emissões (RN0015)
+Given que foi emitido um token para minha conta há menos de 60 segundos
+When solicito recuperação novamente, mesmo a partir de outro IP
+Then devo receber a mesma resposta neutra HTTP 200
+And nenhum novo token ou e-mail deve ser gerado
+And o pedido não deve invalidar o link atual
 ```
 
 ## RF0007: Redefinir senha de acesso via token de redefinição
@@ -271,6 +283,11 @@ And submeto a transação contendo o token de redefinição
 Then o sistema deve alterar a senha de acesso da minha conta no banco de dados com sucesso
 And deve invalidar imediatamente o token utilizado
 And deve encerrar todas as minhas sessões de acesso ativas (logout compulsório)
+
+Scenario: Caminho Alternativo - Senha acima do limite de armazenamento (RN0002)
+When informo uma senha cuja codificação UTF-8 ultrapassa 72 bytes
+Then o sistema deve recusar a operação sem gravar a nova senha
+And deve explicar o limite de 72 bytes e que acentos e emojis podem ocupar mais de um byte
 
 Scenario: Caminho Alternativo 1 - Falha na redefinição por senha fora do padrão de força estrutural (RN0002)
 Given que eu possuo um token de redefinição válido

@@ -12,7 +12,7 @@ Este documento registra as decisões arquiteturais efetivamente adotadas, com fo
 
 O CoManga utiliza arquitetura cliente-servidor em três camadas: Apresentação, Aplicação e Persistência. A stack principal é PostgreSQL, Express, React e Node.js, com TypeScript no frontend e no backend.
 
-O fluxo principal é: navegador -> SPA React hospedada na Vercel -> API REST hospedada na Render -> PostgreSQL no Neon. O backend também integra SMTP para mensagens de conta e Cloudflare R2 para o armazenamento de capas processadas.
+O fluxo principal é: navegador -> SPA React hospedada na Vercel -> API REST hospedada na Render -> PostgreSQL no Neon. O backend também integra Resend HTTPS para mensagens de conta e Cloudflare R2 para o armazenamento de capas processadas.
 
 ### Camada de Apresentação (Frontend)
 
@@ -70,7 +70,7 @@ ESLint é utilizado nas duas aplicações. A integração contínua no GitHub Ac
 
 O projeto mantém ambientes separados para desenvolvimento, testes automatizados e deploy. Cada ambiente utiliza sua própria base Neon e variáveis de ambiente próprias. Migrations e ações de manutenção devem ser direcionadas conscientemente ao banco correspondente.
 
-No deploy, o frontend é hospedado na Vercel, o backend é hospedado na Render, o PostgreSQL permanece no Neon, as capas processadas ficam no Cloudflare R2 e as mensagens de conta usam SMTP por Nodemailer. As plataformas realizam deploy a partir das branches configuradas, enquanto os segredos permanecem somente nas configurações de ambiente.
+No deploy, o frontend é hospedado na Vercel, o backend é hospedado na Render, o PostgreSQL permanece no Neon, as capas processadas ficam no Cloudflare R2 e as mensagens de conta usam Resend por HTTPS. A configuração do Resend e a aplicação das novas migrations ainda dependem de validação no ambiente de destino. As plataformas realizam deploy a partir das branches configuradas, enquanto os segredos permanecem somente nas configurações de ambiente.
 
 O backend gera o Prisma Client, aplica as migrations destinadas ao ambiente e compila TypeScript antes de iniciar o processo Node.js. O frontend é gerado pelo Vite e servido pela infraestrutura CDN da Vercel.
 

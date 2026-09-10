@@ -441,6 +441,7 @@ Visão do Produto: O CoMangá é uma aplicação web independente, projetada par
 
 - **RFs dependentes:** RF0001, RF0006, RF0007, RF0008, RF0012
 - **Descrição:** Para a definição ou alteração da senha de acesso, o sistema deve exigir simultaneamente: Comprimento mínimo de 8 caracteres. Ao menos uma letra maiúscula. Ao menos uma letra minúscula. Ao menos um número. Ao menos um caractere especial. Caso a senha viole qualquer condição, o sistema deve recusar a transação e retornar: "Utilize no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial."
+- **Limite do armazenamento:** No cadastro e na redefinição, senhas acima de 72 bytes em UTF-8 devem ser recusadas com a mensagem "A senha deve ter no máximo 72 bytes em UTF-8; acentos e emojis podem ocupar mais de um byte." Não truncar senhas silenciosamente. O login de contas existentes mantém a compatibilidade.
 
 #### RN0003 — Prevenção de duplicidade de e-mails de contas de acesso
 
@@ -505,7 +506,7 @@ Visão do Produto: O CoMangá é uma aplicação web independente, projetada par
 #### RN0015 — Resposta neutra à solicitação de redefinição de senha
 
 - **RFs dependentes:** RF0006
-- **Descrição:** Para uma solicitação com e-mail de formato válido e dentro do limite de solicitações, o sistema deve retornar HTTP 200 e a mensagem “Se houver uma conta apta para este e-mail, enviaremos as instruções de recuperação.”, independentemente da existência ou do status da conta e de falha no envio por SMTP. Um e-mail inexistente não deve gerar token nem disparo de mensagem. Não retornar campos, códigos ou detalhes que revelem se a conta existe ou se o e-mail foi enviado. Campos ausentes ou formato inválido podem retornar erro de validação; o limite de solicitações pode retornar HTTP 429 independentemente da existência da conta. Falhas técnicas devem ser registradas sem senhas, tokens ou credenciais.
+- **Descrição:** Para uma solicitação com e-mail de formato válido e dentro do limite de solicitações, o sistema deve retornar HTTP 200 e a mensagem “Se houver uma conta apta para este e-mail, enviaremos as instruções de recuperação.”, independentemente da existência ou do status da conta e de falha no serviço de e-mail. Um e-mail inexistente não deve gerar token nem disparo de mensagem. Não retornar campos, códigos ou detalhes que revelem se a conta existe ou se o e-mail foi enviado. Campos ausentes ou formato inválido podem retornar erro de validação; o limite de solicitações pode retornar HTTP 429 independentemente da existência da conta. Falhas técnicas devem ser registradas sem senhas, tokens ou credenciais. Emissões para a mesma conta devem respeitar intervalo de 60 segundos, inclusive após consumo do token ou falha de envio; pedidos nesse intervalo mantêm HTTP 200 neutro, sem invalidar o link atual.
 
 #### RN0016 — Elegibilidade da conta para recuperação de senha
 

@@ -4,7 +4,7 @@ Este arquivo é a representação textual dos diagramas do CoMangá para leitura
 
 ## Convenções de status
 
-- `[IMPLEMENTADO]`: existe no código e/ou no schema atual.
+- `[IMPLEMENTADO]`: existe no código e/ou no schema atual; não confirma aplicação das migrations ou validação do deploy.
 - `[REGRA APROVADA]`: comportamento definido no SERS, ainda que a implementação esteja pendente.
 - `[PLANEJADO]`: funcionalidade ou estrutura prevista para evolução.
 - `[FUTURO]`: direção arquitetural, não presente no sistema atual.
@@ -30,7 +30,7 @@ Visitante / Usuário autenticado / Administrador
          v                     v
 [IMPLEMENTADO] PostgreSQL   [IMPLEMENTADO] Serviços externos
   - usuários e sessões        - armazenamento interno de capas
-  - catálogo e opções          - SMTP para mensagens de conta
+  - catálogo e opções          - Resend HTTPS para mensagens de conta
   - metadados de mídia
 ```
 
@@ -42,7 +42,7 @@ flowchart LR
     W -->|REST + cookie HttpOnly| API[API REST - monólito modular]
     API --> DB[(PostgreSQL)]
     API --> R2[Armazenamento interno de mídia]
-    API --> SMTP[Serviço SMTP]
+    API --> Resend[Resend HTTPS]
 ```
 
 ### Limites arquiteturais
@@ -97,10 +97,14 @@ Entidades e atributos principais:
 [IMPLEMENTADO] Usuário
   id, nome de usuário, e-mail, hash de senha, status, nível de acesso,
   token e expiração de ativação, preferência de conteúdo adulto, criado em
-  [REGRA APROVADA] data de nascimento privada, obrigatória e não futura
+  [IMPLEMENTADO] data de nascimento privada e não futura, obrigatória no novo cadastro; contas legadas sem data não acessam +18 público
 
 [IMPLEMENTADO] Sessão
   id, usuário, hash do token de sessão, último uso, revogada em, criada em
+
+[IMPLEMENTADO] Token de Redefinição de Senha
+  id, usuário, hash único do token, expiração, criação e consumo
+  Usuário 1 ----- 0..N Token de Redefinição de Senha
 
 [IMPLEMENTADO] Obra
   id, slug, título em português, título original, país, tipo, status original,
@@ -169,9 +173,9 @@ Usuário administrador 1 ----- 0..N Ativo de Mídia criado/importado
 ```
 
 ```text
-[IMPLEMENTADO] No schema Prisma atual, Obra, Edição e Volume possuem associação opcional com um Ativo de Mídia; a criação de Volume já exige capa na API.
-
-[REGRA APROVADA] No estado desejado, cada Obra, Edição e Volume deve possuir exatamente uma capa interna válida.
+[IMPLEMENTADO] Cada Obra, Edição e Volume possui exatamente uma capa interna válida após a migration.
+  - Migration: exige saneamento prévio, sem apagar registros.
+  - Descarte: coordenado no banco; o estado Descartando permite repetir a limpeza.
   - Cadastro: exige capa válida.
   - Alteração parcial: preserva a capa atual se não houver substituta.
   - Remoção: é proibida sem associação bem-sucedida de substituta válida.
@@ -234,7 +238,7 @@ arbitrariamente a um mês do calendário.
 1. Visitante envia nome de usuário, e-mail, data de nascimento, senha e confirmação.
 2. API valida dados, unicidade, data válida/não futura e regra de senha.
 3. API cria Usuário com status Pendente e preferência +18 desativada.
-4. API gera token de ativação e envia o link por SMTP.
+4. API gera token de ativação e envia o link pelo Resend.
 5. Usuário abre o link; a API valida token e expiração, ativa a conta e invalida o token.
 6. No login, a API valida senha e status, cria Sessão e devolve cookie HttpOnly.
 7. Em toda rota protegida, middleware valida a Sessão no servidor.
@@ -243,22 +247,22 @@ arbitrariamente a um mês do calendário.
 ### Recuperação de senha
 
 ```text
-[PLANEJADO]
+[IMPLEMENTADO]
 1. Usuário solicita recuperação com o e-mail.
-2. Para solicitação válida e dentro do limite, API devolve HTTP 200 com resposta neutra, inclusive para conta inexistente, pendente, bloqueada ou falha de SMTP.
-   Somente para conta ativada, gera token seguro com validade de 1 hora, persiste seu hash em estrutura própria e envia o link por SMTP.
+2. Para solicitação válida e dentro do limite por IP, API devolve HTTP 200 com resposta neutra, inclusive para conta inexistente, pendente, bloqueada ou falha no serviço de e-mail.
+   Somente para conta ativada e respeitado o intervalo de 60 segundos entre emissões, gera token seguro com validade de 1 hora, persiste seu hash em estrutura própria e envia o link pelo Resend.
 3. Usuário informa nova senha e confirmação pelo link.
 4. API valida token e senha, atualiza o hash da senha e invalida o token.
 5. API revoga as sessões ativas da conta.
 
-A estrutura concreta de persistência do token de redefinição ainda será criada.
-Ela não deve reutilizar o token de ativação.
+PasswordResetToken persiste hash único, usuário, expiração, criação e consumo.
+Não reutiliza o token de ativação. Emissão, consumo e login são coordenados por conta.
 ```
 
 ### Conteúdo adulto
 
 ```text
-[REGRA APROVADA; validação de idade ainda pendente de implementação]
+[IMPLEMENTADO]
 1. A data de nascimento é privada e não aparece no catálogo público.
 2. A preferência +18 nasce desativada.
 3. Quando o usuário tenta ativá-la, o backend calcula idade completa na data da solicitação.
