@@ -4,67 +4,95 @@ Grupo: Isaac Leite, Lucas Dalla, Klau Alves, Gabriel Mourgues, Higor Pessoa
 
 ## 1. Introdução
 
-Propósito: O propósito deste documento é definir e detalhar os Requisitos Funcionais, Requisitos Não Funcionais e Regras de Negócio para a primeira versão (MVP - Mínimo Produto Viável) do CoMangá. Este SERS servirá como guia para a equipe de desenvolvimento, garantindo que o produto final atenda às necessidades dos usuários e aos objetivos do projeto. O objetivo do projeto CoMangá é criar a plataforma de referência para catalogação e gerenciamento de coleções de mangás publicados no Brasil.
+**Propósito:** este documento define os Requisitos Funcionais (RF), as Regras de Negócio (RN) e os Requisitos Não Funcionais (RNF) do CoMangá. Ele descreve o sistema implementado nas branches integradas da API (`comanga-api`) e da Web (`comanga-web`) e separa, de forma explícita, o que já existe, o que está planejado e o que foi cancelado. O objetivo do projeto é criar a plataforma de referência para catalogação e acompanhamento de mangás publicados no Brasil.
 
-### Escopo
+### 1.1. Estados dos requisitos
 
-### O que será incluído (In-Scope)
+Cada RF, RN e RNF traz um campo **Estado**:
 
-- Sistema de cadastro e autenticação de usuários.
+- **Vigente:** requisito aplicável à etapa atual do produto. Esse estado não comprova implementação completa nem validação aprovada.
+- **Futuro (planejado):** aprovado para uma próxima etapa, mas sem implementação na API. Pode haver apenas telas “Em breve” na Web.
+- **Cancelado:** abandonado. O identificador é mantido apenas para rastreabilidade e não pode ser reutilizado.
 
-- Catálogo de mangás publicados no Brasil, com informações detalhadas.
+O campo Estado traz apenas um desses três valores, sem histórico de alterações. O grau de atendimento é informado separadamente: comportamento implementado e limitações na descrição, divergências na seção 6.3 e, para os RNFs, situação e evidências nos cenários ATAM. Metas sem medição ou sem procedimento comprovado, como RNF01, RNF02 e RNF11, continuam vigentes sem serem consideradas atendidas. Trechos removidos de requisitos vigentes estão na seção 6.1, e cada divergência entre especificação e implementação é descrita somente na seção 6.3, com apontamento no requisito afetado.
 
-- Funcionalidade de "Estante Digital" para o usuário gerenciar sua coleção pessoal.
+Os identificadores nunca são renumerados. Requisitos novos recebem o próximo número livre. A seção 6 lista os itens cancelados e fora de escopo, e a seção 7 traz a matriz de rastreabilidade entre requisitos, regras e cenários Gherkin.
 
-- Funcionalidade de "Lista de Desejos" para o usuário gerenciar o que deseja comprar.
+### 1.2. Escopo
 
-- Calendário de lançamentos para acompanhamento mensal dos Volumes publicados no Brasil.
+**Incluído e implementado (vigente):**
 
-- Ferramenta de busca e filtros para o catálogo.
+- Cadastro, ativação por e-mail, reenvio de ativação, login, logout, recuperação e redefinição de senha, alteração de nome de usuário e de senha, preferência de conteúdo adulto e exclusão da própria conta.
+- Perfis de acesso por conta (Usuário Padrão e Administrador), com perfil ativo por sessão.
+- Catálogo público de mangás publicados no Brasil: vitrine de Obras, vitrine de Edições, página do Autor e detalhes de Obra, Edição e Volume, com URLs contextualizadas.
+- Controle de conteúdo adulto no catálogo público.
+- Painel administrativo para curadoria: Obras, Edições, Volumes, listas de valores (“Gerenciar opções”), contas de usuário e capas internas.
 
-- Painel administrativo para a curadoria do banco de dados.
+**Futuro (planejado):**
 
-### O que não será incluído (Out-of-Scope)
+- Estante Digital (coleção pessoal), Lista de Desejos e Calendário de Lançamentos (tela “Checklist”). Hoje existem apenas as telas “Em breve” em `/colecao`, `/desejos` e `/checklist`, a tela de seleção visual de Volumes e os botões “Coleção” e “Lista de Desejos” sem ação na página do Volume. Não há API nem persistência para esses recursos.
 
-- Funcionalidades de rede social (ex: seguir usuários, mensagens diretas).
+**Fora de escopo:**
 
-- Sistema de e-commerce ou venda direta de produtos.
-
-- Aplicativo móvel nativo (a primeira versão será uma aplicação web responsiva).
-
+- Funcionalidades de rede social (seguir usuários, mensagens diretas).
+- E-commerce ou venda direta. O único vínculo comercial é o link de afiliado do Volume.
+- Aplicativo móvel nativo. A aplicação é web e responsiva.
 - Catalogação de mangás não publicados oficialmente no Brasil.
+- Avaliações e resenhas de usuários.
+- Edições ou volumes digitais.
 
-- Sistema de avaliações e resenhas de usuários
+### 1.3. Terminologia
 
-- Informações sobre edições/volumes digitais.
+- **SERS:** Especificação de Requisitos de Software (este documento).
+- **Obra:** a propriedade intelectual original, com os metadados do país de origem: títulos, país de origem, tipo de Obra, autoria, editoras originais, pré-publicações, status e anos da publicação original, demografias, gêneros, sinopse, capa e indicação de conteúdo adulto.
+- **Edição:** a publicação física licenciada e lançada no Brasil por uma editora brasileira. Uma Obra pode ter várias Edições, identificadas pelo número da edição (1ª, 2ª...). Cada Edição tem editora brasileira, status de publicação no Brasil e metadados físicos opcionais (acabamento, formato e miolo). A Edição não tem capa própria.
+- **Volume:** o livro físico unitário que pertence a uma Edição, com número, capa, data de lançamento, preço, páginas, ISBN, link de afiliado e sinopse.
+- **Hierarquia editorial:** Obra → Edição → Volume. O foco dos dados editoriais é a publicação brasileira.
+- **Número da edição:** inteiro positivo, único na Obra, exibido em forma ordinal (“2ª edição”).
+- **Acabamento:** tipo de capa física da Edição (lista “Tipos de capa”).
+- **Formato:** dimensões físicas da Edição (lista “Formatos físicos”).
+- **Miolo:** tipo de papel interno da Edição (lista “Miolos”); uma Edição pode combinar vários miolos, em ordem. Não confundir com papel de autoria.
+- **Papel de autoria (crédito):** função de um autor na Obra: História e Arte, História, Arte, Criador Original, História Original, Ilustrador ou Design de Personagens.
+- **Pré-publicação:** revista de serialização em que a Obra foi publicada antes dos volumes (lista “Revistas de serialização”).
+- **Lançamento direto:** Obra publicada diretamente em volume, sem pré-publicação.
+- **Capa interna:** imagem importada, processada e armazenada na infraestrutura de mídia do CoMangá (Cloudflare R2). É a única capa exibida.
+- **Capa derivada da Edição:** a capa exibida para a Edição, que é a capa do seu Volume 1.
+- **Visibilidade:** estado “Público” ou “Privado” de Obra, Edição e Volume. Somente registros públicos em toda a hierarquia aparecem no catálogo público.
+- **Conteúdo adulto:** Obra marcada como adulta ou associada ao gênero Hentai.
+- **Lista administrativa (categoria):** conjunto de valores usados nos formulários e gerenciado em “Gerenciar opções”. As listas são: autores, pré-publicações (revistas de serialização) e editoras originais, usadas no formulário de Obra; e editoras brasileiras, acabamentos (tipos de capa), formatos e miolos, usadas no formulário de Edição.
+- **Valor controlado pelo sistema:** tipo de Obra ou gênero. São valores fixos, criados pelas migrations, sem nenhuma gestão pelo Administrador: não aparecem em “Gerenciar opções”.
+- **Valor nativo:** valor fixo do sistema, fora das listas administrativas: país de origem, demografia, status de publicação, papel de autoria, precisão da data e moeda.
+- **Slug:** identificador textual da Obra na URL, gerado a partir do título em português no cadastro.
+- **URL contextualizada:** caminho público que carrega a Obra e a Edição, como `/obras/{slug}/edicao/{editionId}/volume/{volumeId}`.
+- **Conta:** registro de acesso de uma pessoa, com e-mail, nome de usuário, senha, data de nascimento e status.
+- **Status da conta:** “Pendente” (aguardando ativação), “Ativada” ou “Bloqueada”. O status “Bloqueada” é reconhecido pelo sistema, mas o fluxo que o atribui é planejado (RF0054).
+- **Perfil:** conjunto de permissões atribuível a uma conta. Existem dois perfis de sistema: **Usuário Padrão** e **Administrador**.
+- **Perfis concedidos:** os perfis que a conta possui. Toda conta possui Usuário Padrão. Administrador é concedido por outro Administrador.
+- **Perfil preferido:** o perfil salvo na conta e usado como perfil ativo no próximo login.
+- **Perfil ativo:** o perfil em uso em uma sessão. Define o contexto de navegação e a autorização administrativa. Trocar o perfil ativo não concede nem remove perfis.
+- **Nível de acesso:** termo legado. Na interface de contas, indica apenas se a conta possui ou não o perfil Administrador. O campo `nivel_acesso` é mantido sincronizado por compatibilidade e não é usado para autorizar.
+- **Sessão:** vínculo autenticado entre o navegador e a API, transportado por cookie HttpOnly e guardado no servidor.
+- **Estante Digital** (futuro): coleção pessoal de Volumes de um usuário.
+- **Lista de Desejos** (futuro): Volumes que o usuário pretende comprar.
+- **Calendário de Lançamentos** (futuro): lista mensal de Volumes previstos.
+- **Curadoria:** manutenção da precisão das informações do catálogo pelo Administrador.
 
-### Terminologia
-
-- SERS: Especificação de Requisitos de Software (este documento).
-
-- Obra: Refere-se à propriedade intelectual original (a ideia do mangá), contendo os metadados universais criados no país de origem (ex: Título Original, Autor, Demografia, Gêneros).
-
-- Edição: Refere-se ao produto físico licenciado e publicado no Brasil por uma editora local. Uma Obra pode ter múltiplas Edições (ex: Tankobon, Kanzenban, 2 em 1), cada uma com suas próprias características de formato, tipo de capa e papel.
-
-- Volume: O objeto físico e unitário (o livro em si) que pertence a uma Edição específica e compõe a coleção do usuário.
-
-- Estante Digital: A coleção pessoal e virtual de um usuário dentro da plataforma.
-
-- Calendário de Lançamentos: Seção do site que lista os Volumes previstos para publicação em determinado mês e ano.
-
-- Curadoria: Processo de adicionar, editar e manter a precisão das informações no banco de dados de mangás.
+“Perfil”, “papel de autoria”, “role” e “nível de acesso” não são sinônimos. Neste documento, “perfil” refere-se a permissões da conta. “Papel” refere-se apenas a créditos de autoria. “Role” aparece somente como nome de campo legado na API.
 
 ## 2. Descrição Geral
 
-Visão do Produto: O CoMangá é uma aplicação web independente, projetada para ser a principal ferramenta de apoio para colecionadores de mangás no Brasil. Ele não substitui as lojas ou as editoras, mas atua como uma camada de organização e informação que se conecta a esse ecossistema. Sua principal dependência externa é a disponibilidade de informações públicas sobre os lançamentos das editoras. Pode integrar-se a lojas online através de programas de afiliados.
+**Visão do Produto:** o CoMangá é uma aplicação web independente de apoio a colecionadores e leitores de mangás no Brasil. Ele não substitui lojas nem editoras. Atua como camada de organização e informação sobre as publicações brasileiras. A principal dependência externa é a disponibilidade de informações públicas sobre os lançamentos. A integração comercial se limita ao link de afiliado de cada Volume, exibido na Web como “Comprar na Amazon”.
 
-### Usuários e Contexto
+**Contexto técnico resumido:** a Web é uma SPA React publicada na Vercel, que repassa `/api` para a API. A API é Express com Prisma, publicada no Render, sobre PostgreSQL hospedado no Neon, com bancos separados para desenvolvimento, testes e implantação. As capas ficam no Cloudflare R2 e os e-mails transacionais são enviados pelo Resend.
 
-- Colecionador Dedicado: Usuário com uma coleção considerável que busca eficiência, precisão e controle. Necessita de ferramentas detalhadas para marcar volumes possuídos, acompanhar o status de suas séries e gerenciar uma lista de desejos.
+### 2.1. Usuários e contexto
 
-- Novo Entusiasta: Usuário em estágio inicial do hobby. Necessita de uma interface simples, ferramentas de descoberta, sinopses claras e um guia de lançamentos para se orientar no mercado.
-
-- Administrador / Curador de Dados: Usuário interno com permissões elevadas. Responsável por manter a integridade, a normalização e a atualização do banco de dados (cadastrando Obras, Edições e Volumes sem duplicações). Ele garante que a plataforma funcione como uma "Única Fonte de Verdade" (Single Source of Truth) para os colecionadores, entregando a proposição de valor do CoMangá com máxima precisão técnica e histórica.
+- **Visitante:** pessoa sem sessão. Navega pelo catálogo público, cadastra conta, ativa, reenvia a ativação e recupera a senha. Não vê conteúdo adulto.
+- **Usuário Padrão:** conta Ativada navegando com o perfil Usuário Padrão ativo. Usa o catálogo público e as configurações da conta. Vê conteúdo adulto somente se for maior de idade e tiver a preferência habilitada. As personas de referência são:
+  - **Colecionador Dedicado:** busca eficiência, precisão e controle. Precisará da Estante Digital e da Lista de Desejos (futuro).
+  - **Novo Entusiasta:** precisa de interface simples, descoberta, sinopses claras e um guia de lançamentos (futuro).
+- **Administrador / Curador de Dados:** conta com o perfil Administrador concedido. Com esse perfil ativo, mantém a integridade e a normalização do catálogo (Obras, Edições e Volumes sem duplicações), as listas administrativas e os perfis das demais contas. Para navegar no catálogo público, troca o perfil ativo para Usuário Padrão.
+- **Serviços externos:** Resend (e-mail), Cloudflare R2 (mídia) e a origem remota informada na importação de capa.
 
 ## 3. Requisitos Funcionais
 
@@ -74,85 +102,113 @@ Visão do Produto: O CoMangá é uma aplicação web independente, projetada par
 
 - **Módulo:** Autenticação e Perfil de Usuário
 - **Prioridade:** Essencial
+- **Estado:** Vigente
 - **RNs associadas:** RN0001, RN0002, RN0003, RN0004, RN0005, RN0006, RN0007, RN0020, RN0048
-- **Descrição:** O sistema deve permitir que um usuário visitante cadastre uma nova conta de acesso mediante o recebimento obrigatório dos seguintes dados. Nome de Usuário E-mail Data de nascimento Senha Confirmação de Senha A data de nascimento deve ser válida e não pode ser futura. Imediatamente após a gravação, o sistema deve atribuir o status inicial da conta como “Pendente”, gerar um token de ativação e disparar automaticamente uma mensagem para o e-mail cadastrado contendo o link de ativação associado ao token.
+- **Descrição:** o visitante cadastra uma conta informando nome de usuário, e-mail, data de nascimento, senha e confirmação de senha. A data de nascimento deve ser válida e não futura. A conta é criada com status “Pendente”, perfil Usuário Padrão e preferência de conteúdo adulto desativada. O sistema gera um token de ativação válido por 24 horas e envia ao e-mail informado o link de ativação. Se o envio falhar, a conta permanece criada e a resposta orienta o uso do reenvio.
 
 #### RF0002 — Ativar conta de acesso via token de ativação
 
 - **Módulo:** Autenticação e Perfil de Usuário
 - **Prioridade:** Essencial
+- **Estado:** Vigente
 - **RNs associadas:** RN0007, RN0008
-- **Descrição:** O sistema deve alterar o status de uma conta de acesso no banco de dados de "Pendente" para "Ativada" mediante o recebimento obrigatório de um token de ativação.
+- **Descrição:** ao abrir o link de ativação (`/activate/{token}`), o sistema altera o status da conta de “Pendente” para “Ativada” e invalida o token. A tela de ativação não exige sessão.
 
 #### RF0003 — Reenviar e-mail com link de ativação da conta de acesso
 
 - **Módulo:** Autenticação e Perfil de Usuário
 - **Prioridade:** Importante
-- **RNs associadas:** RN0009, RN0010, RN0011
-- **Descrição:** O sistema deve permitir o reenvio do link de ativação para contas com status “Pendente”, mediante o recebimento do endereço de e-mail cadastrado, resultando na geração de um novo token de ativação e no disparo de uma nova mensagem.
+- **Estado:** Vigente
+- **RNs associadas:** RN0007, RN0009, RN0010, RN0011
+- **Descrição:** o visitante informa o e-mail de uma conta “Pendente” e recebe um novo link de ativação. O sistema gera um novo token de 24 horas, que invalida o anterior.
 
 #### RF0004 — Autenticar credenciais da conta de acesso e retornar sessão de acesso
 
 - **Módulo:** Autenticação e Perfil de Usuário
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0012, RN0013, RN0014
-- **Descrição:** O sistema deve autenticar o acesso de uma conta mediante o recebimento obrigatório dos parâmetros e-mail e senha, resultando na criação de uma sessão stateful persistida no servidor. O identificador opaco da sessão deve ser enviado ao cliente por cookie HttpOnly, sem expor credenciais ou dados sensíveis.
+- **Estado:** Vigente
+- **RNs associadas:** RN0012, RN0013, RN0014, RN0062
+- **Descrição:** o visitante informa e-mail e senha. Com credenciais válidas e conta Ativada, o sistema cria uma sessão no servidor e envia ao navegador apenas um identificador opaco em cookie HttpOnly. A sessão começa com o perfil preferido da conta, se ele ainda estiver concedido, ou com Usuário Padrão. A resposta informa nome de usuário, perfis concedidos e perfil ativo. A Web confirma com “Login realizado com sucesso!” e abre a página de perfil. O excesso de tentativas é limitado conforme RNF08. Divergência na implementação: ver seção 6.3.
 
 #### RF0005 — Encerrar sessão de acesso ativa
 
 - **Módulo:** Autenticação e Perfil de Usuário
 - **Prioridade:** Essencial
-- **RNs associadas:** N/A
-- **Descrição:** O sistema deve encerrar a sessão de acesso apresentada no cookie HttpOnly da requisição, revogando o registro correspondente na persistência de sessões e removendo o cookie do cliente.
+- **Estado:** Vigente
+- **RNs associadas:** RN0014
+- **Descrição:** o usuário encerra a sessão atual. O sistema revoga a sessão no servidor e remove o cookie. A Web exibe somente a confirmação “Sessão encerrada com segurança.” e leva à tela de login, mesmo que a chamada à API falhe, sem exibir em paralelo o aviso de sessão inválida.
 
 #### RF0006 — Solicitar redefinição de senha de acesso via e-mail
 
 - **Módulo:** Autenticação e Perfil de Usuário
 - **Prioridade:** Essencial
+- **Estado:** Vigente
 - **RNs associadas:** RN0015, RN0016, RN0017
-- **Descrição:** O sistema deve receber o e-mail de acesso e retornar a resposta neutra definida em RN0015. Somente para conta elegível conforme RN0016, deve gerar um token de verificação com validade de 1 hora e enviar o link de recuperação, sem revelar na resposta a existência ou o status da conta.
+- **Descrição:** o visitante informa o e-mail e sempre recebe a resposta neutra de RN0015. Somente para conta elegível (RN0016) o sistema gera um token de redefinição válido por 1 hora e envia o link de recuperação, sem revelar na resposta a existência ou o status da conta.
 
 #### RF0007 — Redefinir senha de acesso via token de redefinição
 
 - **Módulo:** Autenticação e Perfil de Usuário
 - **Prioridade:** Essencial
+- **Estado:** Vigente
 - **RNs associadas:** RN0002, RN0014, RN0017, RN0018, RN0019, RN0020
-- **Descrição:** O sistema deve alterar a senha de acesso de uma conta no banco de dados mediante o recebimento obrigatório de um token de redefinição em conjunto com o recebimento obrigatório dos seguintes parâmetros: Nova Senha Confirmação de Nova Senha
+- **Descrição:** a partir do link recebido (`/redefinir-senha/{token}`), o visitante informa nova senha e confirmação. Com token válido, o sistema altera a senha, consome o token, encerra todas as sessões da conta e responde “Senha redefinida com sucesso. Faça login novamente.”.
 
 #### RF0008 — Redefinir senha de acesso em sessão ativa
 
 - **Módulo:** Autenticação e Perfil de Usuário
 - **Prioridade:** Importante
-- **RNs associadas:** RN0002, RN0014, RN0020, RN0021
-- **Descrição:** O sistema deve alterar a senha de acesso da conta identificada pela sessão stateful ativa e validada, mediante o recebimento obrigatório dos seguintes parâmetros: Senha Atual Nova Senha Confirmação de Nova Senha Após a alteração bem-sucedida, o sistema deve revogar as sessões ativas da conta quando aplicável.
+- **Estado:** Vigente
+- **RNs associadas:** RN0002, RN0014, RN0020, RN0021, RN0073
+- **Descrição:** nas configurações avançadas do perfil, o usuário informa senha atual, nova senha e confirmação. O sistema altera a senha da conta identificada pela sessão, mantém autenticada a sessão usada na alteração e encerra as demais sessões da conta. A resposta é “Senha alterada com sucesso! As demais sessões da conta foram encerradas.”. Tentativas com senha atual incorreta são limitadas por conta (RNF08).
 
 #### RF0009 — Consultar dados cadastrais da própria conta
 
 - **Módulo:** Autenticação e Perfil de Usuário
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0022
-- **Descrição:** O sistema deve consultar os dados cadastrais da conta identificada pela sessão stateful ativa e validada. Ao processar a consulta, o sistema deve retornar estritamente o nome de usuário, o e-mail, o nível de acesso e a preferência de exibição de conteúdo adulto necessários à interface.
+- **Estado:** Vigente
+- **RNs associadas:** RN0022, RN0062
+- **Descrição:** o sistema retorna os dados da conta identificada pela sessão: nome de usuário, e-mail, preferência efetiva de conteúdo adulto, indicação de elegibilidade para habilitá-la (18 anos completos), perfis concedidos e perfil ativo. A data de nascimento não é retornada.
 
 #### RF0010 — Alterar nome de usuário em sessão ativa
 
 - **Módulo:** Autenticação e Perfil de Usuário
 - **Prioridade:** Importante
-- **RNs associadas:** RN0001, RN0022
-- **Descrição:** O sistema deve alterar o nome de usuário da conta identificada pela sessão stateful ativa e validada, mediante o recebimento obrigatório do novo nome de usuário.
+- **Estado:** Vigente
+- **RNs associadas:** RN0001, RN0004, RN0022
+- **Descrição:** nas configurações avançadas do perfil, o usuário informa um novo nome de usuário. O sistema altera o nome da conta identificada pela sessão. Não há período de carência nem histórico de nomes. A Web recusa repetir o nome atual sem consultar a API.
 
 #### RF0011 — Alterar preferência de exibição de conteúdo adulto
 
 - **Módulo:** Autenticação e Perfil de Usuário
 - **Prioridade:** Essencial
+- **Estado:** Vigente
 - **RNs associadas:** RN0022, RN0048
-- **Descrição:** O sistema deve alterar a preferência de exibição de conteúdo adulto da conta identificada pela sessão stateful ativa e validada, mediante o recebimento obrigatório de um valor booleano correspondente a Ativado ou Desativado. A ativação somente pode ocorrer quando o backend calcular, a partir da data de nascimento privada da conta, que o usuário possui 18 anos completos na data da solicitação.
+- **Descrição:** o usuário ativa ou desativa a preferência de conteúdo adulto da própria conta. A ativação só é aceita quando a data de nascimento indica 18 anos completos. A Web só exibe o controle quando a conta é elegível e o perfil ativo não é Administrador.
 
 #### RF0012 — Excluir permanentemente conta de acesso e dados vinculados
 
 - **Módulo:** Autenticação e Perfil de Usuário
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0021, RN0022
-- **Descrição:** O sistema deve excluir permanentemente a conta identificada pela sessão stateful ativa e todos os dados vinculados que dependam exclusivamente dela, mediante o recebimento obrigatório da senha atual. A exclusão deve encerrar as sessões da conta e não deve aceitar identificador de usuário fornecido pelo cliente.
+- **Estado:** Vigente
+- **RNs associadas:** RN0014, RN0021, RN0022, RN0063
+- **Descrição:** nas configurações avançadas do perfil, o usuário confirma a senha atual e exclui permanentemente a própria conta e os dados que dependem exclusivamente dela (sessões, perfis concedidos e tokens). A exclusão encerra as sessões e não aceita identificador de conta vindo do cliente. A conta do último Administrador efetivo não pode ser excluída.
+
+#### RF0052 — Alternar perfil ativo da sessão
+
+- **Módulo:** Autenticação e Perfil de Usuário
+- **Prioridade:** Essencial
+- **Estado:** Vigente
+- **RNs associadas:** RN0062, RN0064, RN0065
+- **Descrição:** a conta com mais de um perfil concedido escolhe, na página de perfil, qual perfil usar na sessão atual. O sistema aceita apenas perfis concedidos à conta, altera o perfil ativo somente desta sessão, salva a escolha como perfil preferido e responde “Perfil ativo atualizado com sucesso!”. A Web confirma com “Perfil ativo alterado para {perfil}.” e atualiza o contexto sem recarregar a página. Contas só com Usuário Padrão não veem o seletor.
+
+#### RF0053 — Direcionar o acesso às páginas conforme sessão e perfil ativo
+
+- **Módulo:** Autenticação e Perfil de Usuário
+- **Prioridade:** Essencial
+- **Estado:** Vigente
+- **RNs associadas:** RN0014, RN0064, RN0065
+- **Descrição:** a Web direciona cada pessoa conforme a sessão e o perfil ativo. Páginas de visitante enviam usuários autenticados ao perfil. Páginas protegidas enviam visitantes ao login. Páginas administrativas exigem o perfil Administrador ativo. Páginas públicas do catálogo não são exibidas com o perfil Administrador ativo. A API revalida a autorização em cada rota protegida.
 
 ### 3.2. Módulo: Administração
 
@@ -160,162 +216,207 @@ Visão do Produto: O CoMangá é uma aplicação web independente, projetada par
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0023, RN0024, RN0025, RN0026, RN0027
-- **Descrição:** O sistema deve cadastrar uma nova Obra no banco de dados mediante o recebimento dos seguintes dados: Título em português Título original País de origem Tipo de Obra Capa interna importada por URL Um ou mais autores, cada qual com um ou mais papéis de autoria Status de publicação original Ano de início da publicação original Ano de fim da publicação original, quando aplicável Número de volumes originais, quando aplicável Uma ou mais editoras originais, em ordem definida Indicação de lançamento direto, sem pré-publicação Uma ou mais pré-publicações, em ordem definida, quando aplicável Uma ou mais demografias, quando aplicável Um ou mais gêneros Indicador de conteúdo adulto Os campos País de origem, Status de publicação original, Demografia e Papéis de autoria devem utilizar os valores nativos definidos pelo sistema. Autores, Tipo de Obra, Gêneros, Editoras Originais e Pré-publicações devem utilizar domínios administrativos válidos.
+- **Estado:** Vigente
+- **RNs associadas:** RN0023, RN0024, RN0025, RN0026, RN0027, RN0066, RN0067, RN0068
+- **Descrição:** o Administrador cadastra uma Obra em “Novo mangá” (`/admin/novo-manga`), num formulário em quatro etapas:
+  1. **Identificação:** título em português, título original, título romanizado, país de origem e tipo de Obra.
+  2. **Autoria:** um ou mais autores, cada um com um ou mais papéis de autoria.
+  3. **Publicação original e classificação:** editoras originais (em ordem definida), status da publicação original, anos de início e fim, lançamento direto, pré-publicações (em ordem definida), demografias, gêneros e indicação de conteúdo adulto.
+  4. **Capa e sinopse:** capa importada por URL (RF0050), exibida antes da sinopse.
+
+  A Obra é gravada numa única transação, com visibilidade “Privado” e slug único gerado a partir do título. Depois do cadastro, a Web oferece as próximas ações (`/admin/pos-cadastro`).
 
 #### RF0014 — Alterar dados de uma Obra específica no banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0023, RN0024, RN0025, RN0026
-- **Descrição:** O sistema deve permitir a alteração parcial ou completa dos dados de uma Obra cadastrada no banco de dados, mediante o recebimento obrigatório do seu identificador único em conjunto com o pacote dos novos dados, persistindo exclusivamente os campos que foram alterados e preservando os demais com seus valores anteriores.
+- **Estado:** Vigente
+- **RNs associadas:** RN0023, RN0024, RN0025, RN0026, RN0060, RN0066, RN0067, RN0068
+- **Descrição:** o Administrador altera parcial ou totalmente os dados de uma Obra (`/admin/gerenciar-mangas/obras/{slug}/editar`). O sistema persiste somente os campos enviados e preserva os demais. Listas enviadas (autores, gêneros, demografias, editoras originais, pré-publicações) substituem integralmente as anteriores. A troca de capa só ocorre com uma nova capa interna válida. O slug não muda quando o título é alterado.
 
 #### RF0015 — Excluir uma Obra específica do banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Importante
+- **Estado:** Vigente
 - **RNs associadas:** RN0028, RN0029
-- **Descrição:** O sistema deve permitir a exclusão permanente de uma Obra cadastrada no banco de dados, mediante o recebimento obrigatório do seu identificador único.
+- **Descrição:** o Administrador exclui permanentemente uma Obra privada e sem Edições, após confirmação. A capa interna que fica sem uso é descartada.
 
 #### RF0016 — Consultar coleção de Obras cadastradas no banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
-- **RNs associadas:** N/A
-- **Descrição:** O sistema deve consultar, de forma paginada, os registros de Obras cadastradas no banco de dados. Ao realizar a consulta, o sistema deve retornar os seguintes metadados de resumo para cada Obra encontrada: URL derivada da capa interna Título em português e título original Autores vinculados, ordenados pela prioridade de seus papéis País de origem Tipo de Obra Quantidade de Edições vinculadas, calculada pelo sistema Status de visibilidade O sistema deve permitir busca textual parcial por título ou autor e filtros combinados por Tipo de Obra, País de origem e Visibilidade. A ordenação deve ser crescente pelo título, podendo ser invertida mediante requisição.
+- **Estado:** Vigente
+- **RNs associadas:** RN0061
+- **Descrição:** em “Gerenciar mangás” (`/admin/gerenciar-mangas`), o sistema lista as Obras de forma paginada (até 50 por página), em lista ou grade. Cada Obra mostra capa, título, autores ordenados pelo crédito, país de origem, tipo de Obra, quantidade de Edições calculada e visibilidade. O título original está disponível na API, mas a Web não o exibe na lista. A busca textual parcial é pelo título em português. Os filtros combináveis são tipo de Obra, país de origem e visibilidade. Na Web, a ordenação é por título, crescente (padrão) ou decrescente. A ordenação por autor, país, tipo, quantidade de Edições ou visibilidade está disponível na API.
 
 #### RF0017 — Consultar dados de uma Obra específica do banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
+- **Estado:** Vigente
 - **RNs associadas:** N/A
-- **Descrição:** O sistema deve consultar e retornar todos os dados de um registro de Obra cadastrada no banco de dados mediante o recebimento obrigatório do seu identificador único, refletindo o estado mais recente do registro.
+- **Descrição:** o sistema retorna todos os dados de uma Obra, localizada pelo identificador ou pelo slug usado nas rotas administrativas, refletindo o estado mais recente do registro.
 
 #### RF0018 — Alterar status de visibilidade de uma Obra específica do banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
+- **Estado:** Vigente
 - **RNs associadas:** RN0030
-- **Descrição:** O sistema deve alterar o status de visibilidade de uma Obra entre “Público” e “Privado”, mediante o recebimento obrigatório de seu identificador único e do novo status, respeitando as regras hierárquicas aplicáveis às Edições vinculadas.
+- **Descrição:** o Administrador alterna a visibilidade de uma Obra entre “Público” e “Privado”. Tornar a Obra pública não publica suas Edições. Tornar a Obra privada exige que nenhuma Edição vinculada esteja pública.
 
 #### RF0019 — Cadastrar nova Edição vinculada a uma Obra no banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0031, RN0032, RN0033, RN0034
-- **Descrição:** O sistema deve cadastrar uma nova Edição vinculada a uma Obra existente, mediante o recebimento do identificador único da Obra matriz e dos seguintes dados: Editora Brasileira Tipo de Edição Acabamento Formato Número cronológico da Edição, persistido como número inteiro Status de publicação no Brasil Capa interna da Edição importada por URL HTTPS Editora Brasileira, Tipo de Edição, Acabamento e Formato devem utilizar valores administrativos válidos. O Número cronológico e o Status de publicação no Brasil devem utilizar os valores nativos definidos pelo sistema.
+- **Estado:** Vigente
+- **RNs associadas:** RN0031, RN0032, RN0033, RN0034, RN0069
+- **Descrição:** o Administrador cadastra uma Edição vinculada a uma Obra existente (`/admin/gerenciar-mangas/obras/{slug}/edicoes/nova`). Informa número da edição, editora brasileira e status de publicação no Brasil (obrigatórios) e, se conhecidos, acabamento, formato e um ou mais miolos. A Edição nasce “Privado” e não recebe capa própria: sua capa é derivada do Volume 1.
 
 #### RF0020 — Alterar dados de uma Edição específica no banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
+- **Estado:** Vigente
 - **RNs associadas:** RN0031, RN0032, RN0033
-- **Descrição:** O sistema deve permitir a alteração parcial ou completa dos dados de uma Edição cadastrada no banco de dados, mediante o recebimento obrigatório do seu identificador único em conjunto com o pacote dos novos dados, persistindo exclusivamente os campos que foram alterados e preservando os demais com seus valores anteriores.
+- **Descrição:** o Administrador altera parcial ou totalmente os dados de uma Edição (`.../edicoes/{editionId}/editar`). O sistema persiste somente os campos enviados. Acabamento e formato podem voltar a nulo; os miolos podem ser removidos enviando uma lista vazia. A lista enviada substitui integralmente a anterior, e sua omissão preserva os vínculos.
 
 #### RF0021 — Excluir uma Edição específica do banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Importante
+- **Estado:** Vigente
 - **RNs associadas:** RN0035, RN0036
-- **Descrição:** O sistema deve permitir a exclusão permanente de uma Edição cadastrada no banco de dados, mediante o recebimento obrigatório do seu identificador único.
+- **Descrição:** o Administrador exclui permanentemente uma Edição privada e sem Volumes, após confirmação.
 
 #### RF0022 — Consultar coleção de Edições vinculadas a uma Obra no banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
-- **RNs associadas:** N/A
-- **Descrição:** O sistema deve consultar, de forma paginada, as Edições vinculadas a uma Obra matriz. Ao realizar a consulta, o sistema deve retornar os seguintes metadados de resumo para cada Edição encontrada: URL derivada da capa interna da Edição Editora Brasileira Número cronológico da Edição, apresentado em formato ordinal Tipo de Edição Quantidade de Volumes vinculados, calculada pelo sistema Status de visibilidade A coleção deve ser ordenada de forma decrescente pelo Número cronológico da Edição.
+- **Estado:** Vigente
+- **RNs associadas:** RN0051, RN0061, RN0069
+- **Descrição:** em “Gerenciar edições” (`/admin/gerenciar-mangas/obras/{slug}/edicoes`), o sistema mostra a prévia da Obra e lista, de forma paginada (até 50 por página), suas Edições. Cada Edição mostra capa derivada do Volume 1 (ou “Sem capa (cadastre o Volume 1)”), número em formato ordinal, editora brasileira, quantidade de Volumes calculada e visibilidade. Acabamento, formato, miolo e status no Brasil estão disponíveis na API, mas a Web não os exibe nessa lista. A ordenação padrão é decrescente pelo número da edição.
 
 #### RF0023 — Consultar dados de uma Edição específica do banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
+- **Estado:** Vigente
 - **RNs associadas:** N/A
-- **Descrição:** O sistema deve consultar e retornar todos os dados de um registro de Edição cadastrada no banco de dados mediante o recebimento obrigatório do seu identificador único, refletindo o estado mais recente do registro.
+- **Descrição:** o sistema retorna todos os dados de uma Edição pelo identificador, com a Obra vinculada e a capa derivada, refletindo o estado mais recente do registro.
 
 #### RF0024 — Alterar status de visibilidade de uma Edição específica do banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0037, RN0040, RN0042
-- **Descrição:** O sistema deve alterar o status de visibilidade de uma Edição entre “Público” e “Privado”, mediante o recebimento obrigatório de seu identificador único e do novo status. A operação deve respeitar a visibilidade da Obra matriz e propagar o resultado aos Volumes vinculados.
+- **Estado:** Vigente
+- **RNs associadas:** RN0037, RN0040, RN0042, RN0069
+- **Descrição:** o Administrador alterna a visibilidade de uma Edição entre “Público” e “Privado”. A publicação exige Obra pública e Volume 1 com capa interna. O novo status é aplicado a todos os Volumes da Edição na mesma transação. O bloqueio por Volumes em acervos pessoais (RN0042) depende da Estante Digital e ainda não se aplica.
 
 #### RF0025 — Cadastrar novo Volume vinculado a uma Edição no banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
+- **Estado:** Vigente
 - **RNs associadas:** RN0038, RN0039, RN0040
-- **Descrição:** O sistema deve cadastrar um novo Volume vinculado a uma Edição existente, mediante o recebimento do identificador único da Edição matriz e dos seguintes dados: Número do Volume, permitindo o valor zero Indicação de Volume Único Capa interna importada por URL Precisão da data de publicação, como data completa, mês e ano ou apenas ano Data de publicação compatível com a precisão informada Moeda do preço de capa, com R$ como valor padrão Preço de capa Número de páginas ISBN-10 ISBN-13 Link afiliado Sinopse do Volume O Volume deve herdar a visibilidade vigente da Edição matriz no momento do cadastro.
+- **Descrição:** o Administrador cadastra um Volume vinculado a uma Edição (`.../volumes/novo`). Informa número (a partir de zero), capa interna, precisão e data de lançamento e, opcionalmente, indicação de volume único, páginas, moeda e preço de capa (R$ por padrão), ISBN-10, ISBN-13, link de afiliado e sinopse. O Volume herda a visibilidade vigente da Edição.
 
 #### RF0026 — Alterar dados de um Volume específico no banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0038, RN0039
-- **Descrição:** O sistema deve permitir a alteração parcial ou completa dos dados de um Volume cadastrado no banco de dados, mediante o recebimento obrigatório de seu identificador único e do conjunto de novos dados, persistindo exclusivamente os campos alterados e preservando os demais.
+- **Estado:** Vigente
+- **RNs associadas:** RN0038, RN0039, RN0060, RN0069
+- **Descrição:** o Administrador altera parcial ou totalmente os dados de um Volume (`.../volumes/{volumeId}/editar`). O sistema persiste somente os campos enviados, valida a data resultante e preserva a capa quando não há substituta.
 
 #### RF0027 — Excluir um Volume específico do banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Importante
+- **Estado:** Vigente
 - **RNs associadas:** RN0041
-- **Descrição:** O sistema deve permitir a exclusão permanente de um Volume cadastrado no banco de dados, mediante o recebimento obrigatório do seu identificador único.
+- **Descrição:** o Administrador exclui permanentemente um Volume privado, após confirmação. A capa interna que fica sem uso é descartada. Se o Volume excluído era o Volume 1, a Edição fica sem capa derivada.
 
 #### RF0028 — Consultar coleção de Volumes vinculados a uma Edição no banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
-- **RNs associadas:** N/A
-- **Descrição:** O sistema deve consultar, de forma paginada, os Volumes vinculados a uma Edição matriz. Ao realizar a consulta, o sistema deve retornar os seguintes metadados de resumo para cada Volume encontrado: URL derivada da capa interna Número do Volume ou indicação de Volume Único Data de publicação, quando disponível Status de visibilidade A coleção deve ser ordenada de forma crescente pelo Número do Volume.
+- **Estado:** Vigente
+- **RNs associadas:** RN0061
+- **Descrição:** em “Gerenciar volumes” (`/admin/gerenciar-mangas/obras/{slug}/edicoes/{editionId}/volumes`), o sistema lista os Volumes da Edição de forma paginada (até 50 por página), em lista ou grade. Cada Volume mostra capa, número ou indicação de volume único, data de lançamento conforme a precisão e visibilidade. A ordenação padrão é crescente pelo número. Os breadcrumbs identificam a Obra e a Edição.
 
 #### RF0029 — Consultar dados de um Volume específico do banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
+- **Estado:** Vigente
 - **RNs associadas:** N/A
-- **Descrição:** O sistema deve consultar e retornar todos os dados de um registro de Volume cadastrado no banco de dados mediante o recebimento obrigatório do seu identificador único, refletindo o estado mais recente do registro.
+- **Descrição:** o sistema retorna todos os dados de um Volume pelo identificador (`.../volumes/{volumeId}`), refletindo o estado mais recente do registro.
 
 #### RF0030 — Cadastrar novo valor em uma lista de valores pré-cadastrados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0043
-- **Descrição:** O sistema deve incluir um ou mais valores em uma categoria administrativa mediante o recebimento obrigatório da categoria alvo e do texto de cada novo valor. Quando a categoria depender de País de origem, o sistema também deve receber ao menos um país compatível. Campos nativos do formulário não devem ser expostos como listas administrativas editáveis.
+- **Estado:** Vigente
+- **RNs associadas:** RN0043, RN0066
+- **Descrição:** em “Gerenciar opções” (`/admin/opcoes`), o Administrador inclui um ou mais valores em uma lista gerenciável: autores, pré-publicações ou editoras originais (formulário de Obra), ou editoras brasileiras, acabamentos, formatos ou miolos (formulário de Edição). Vários valores podem ser informados de uma vez, separados por vírgula. Em formatos, a vírgula faz parte do valor (por exemplo, “13,5 x 20,5 cm”). Divergência na implementação (miolos): ver seção 6.3. Autores, pré-publicações e editoras originais exigem ao menos um país de origem relacionado.
 
 #### RF0031 — Alterar um valor específico de uma lista de valores pré-cadastrados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0043
-- **Descrição:** O sistema deve permitir a alteração de um valor de categoria administrativa mediante o recebimento obrigatório de seu identificador único e do novo texto. Quando aplicável, também deve permitir a atualização dos países relacionados ao valor.
+- **Estado:** Vigente
+- **RNs associadas:** RN0043, RN0066
+- **Descrição:** o Administrador altera o texto de um valor de lista gerenciável e, quando aplicável, os países relacionados, sem perder os vínculos já existentes. A edição é feita na própria linha do valor. A API também permite ativar e desativar valores dessas listas; por decisão, essa ação existe só na API e a Web não a oferece. Valores inativos não aparecem nos formulários nem nos filtros do catálogo público.
 
 #### RF0032 — Excluir um valor específico de uma lista de valores pré-cadastrados
 
 - **Módulo:** Administração
 - **Prioridade:** Importante
-- **RNs associadas:** RN0044
-- **Descrição:** O sistema deve permitir a exclusão permanente de um valor de uma lista de valores pré-cadastrados no banco de dados, mediante o recebimento obrigatório do seu identificador único.
+- **Estado:** Vigente
+- **RNs associadas:** RN0044, RN0066
+- **Descrição:** o Administrador exclui permanentemente um valor sem vínculos de uma lista gerenciável, após confirmação.
 
 #### RF0033 — Consultar coleção de valores de listas pré-cadastradas
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
-- **RNs associadas:** N/A
-- **Descrição:** O sistema deve consultar, de forma paginada e pesquisável, os valores vinculados a uma categoria administrativa. O retorno deve conter o identificador, o texto do valor e, quando aplicável, os países relacionados. A consulta deve admitir ordenação alfabética crescente ou decrescente.
+- **Estado:** Vigente
+- **RNs associadas:** RN0066
+- **Descrição:** em “Gerenciar opções”, o Administrador escolhe o formulário (Obra ou Edição) e a lista, e o sistema exibe os valores de forma paginada e pesquisável, com texto e, quando aplicável, os países relacionados. Listas com país relacionado mostram 5 valores por página e as demais mostram 6. A ordenação é alfabética crescente ou decrescente. A API também permite consultar tipos de Obra, gêneros e países de origem, que alimentam os formulários, mas essas categorias não são oferecidas para gestão.
 
 #### RF0034 — Consultar coleção de contas de usuário cadastradas no banco de dados
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
-- **RNs associadas:** N/A
-- **Descrição:** O sistema deve consultar, de forma paginada, as contas de usuário cadastradas no banco de dados. Para cada conta, a consulta deve retornar exclusivamente: Identificador único Nome de Usuário Endereço de E-mail Nível de Acesso atual Status de Acesso atual, entre Pendente, Ativada e Bloqueada O sistema deve permitir busca textual parcial por Nome de Usuário ou E-mail, filtros combinados por Nível de Acesso e Status e ordenação crescente ou decrescente pelo Nome de Usuário.
+- **Estado:** Vigente
+- **RNs associadas:** RN0062
+- **Descrição:** em `/admin/users`, o sistema lista as contas de forma paginada (8 por página na Web). Cada conta mostra nome de usuário, e-mail, nível de acesso derivado (Administrador quando possui esse perfil, senão Usuário Padrão) e status (Pendente, Ativada ou Bloqueada). O identificador e a lista de perfis concedidos estão disponíveis na API, mas a Web não os exibe na tabela. Há busca textual parcial por nome de usuário ou e-mail, filtros combináveis por nível de acesso e status e ordenação crescente ou decrescente pelo nome de usuário. A linha da própria conta não permite alteração.
 
-#### RF0035 — Alterar nível de acesso de uma conta de usuário específica
+#### RF0035 — Conceder ou remover perfil Administrador
 
 - **Módulo:** Administração
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0045
-- **Descrição:** O sistema deve permitir a alteração do nível de acesso de uma conta de usuário, mediante o recebimento obrigatório do seu identificador único e do novo nível de acesso.
+- **Estado:** Vigente
+- **RNs associadas:** RN0045, RN0062, RN0063
+- **Descrição:** o Administrador concede ou remove o perfil Administrador de **outra** conta. Conceder mantém o perfil Usuário Padrão, define Administrador como perfil preferido da conta alvo e não altera o perfil ativo das sessões já abertas. Remover mantém Usuário Padrão, troca para Usuário Padrão as sessões abertas que estavam com Administrador ativo e redefine o perfil preferido. A própria conta e a remoção do último Administrador efetivo são bloqueadas.
+
+#### RF0054 — Bloquear e desbloquear conta de usuário
+
+- **Módulo:** Administração
+- **Prioridade:** Importante
+- **Estado:** Futuro (planejado)
+- **RNs associadas:** RN0013
+- **Descrição:** o Administrador poderá bloquear e desbloquear outra conta. O status “Bloqueada” já é reconhecido pelo sistema: impede o login (RN0013), o reenvio de ativação e a recuperação de senha, e aparece no filtro de contas. Falta o fluxo que atribui e retira esse status. Quem pode bloquear, o efeito sobre as sessões abertas e o desbloqueio serão especificados na implementação.
+
+#### RF0050 — Importar e gerenciar capa interna por URL
+
+- **Módulo:** Administração
+- **Prioridade:** Essencial
+- **Estado:** Vigente
+- **RNs associadas:** RN0058, RN0059, RN0060, RN0061
+- **Descrição:** nos formulários de Obra e de Volume, o Administrador informa a URL HTTPS de uma imagem. A API baixa a imagem, valida, processa (variantes WebP em proporção 2:3) e armazena no R2, criando uma capa interna pendente. A capa só é associada quando o formulário é salvo. Uma capa pendente pode ser descartada antes da associação. Na alteração, a nova capa substitui a anterior de forma atômica, e a capa anterior que fica sem uso é descartada. Não é possível remover uma capa associada sem substituí-la. A importação é genérica, sem regras por provedor.
 
 ### 3.3. Módulo: Catálogo Público e Busca
 
@@ -323,15 +424,25 @@ Visão do Produto: O CoMangá é uma aplicação web independente, projetada par
 
 - **Módulo:** Catálogo Público e Busca
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0046, RN0047, RN0048, RN0049
-- **Descrição:** O sistema deve permitir que visitantes e usuários autenticados consultem a vitrine pública de Obras mediante listagem paginada e busca textual pelos seguintes dados: Título Título Original Autor A consulta também deve admitir filtros por Tipo de Obra, País de origem, Demografia e Gênero. Os resultados devem respeitar obrigatoriamente as regras de visibilidade pública, interseção de filtros e ocultação condicional de conteúdo adulto.
+- **Estado:** Vigente
+- **RNs associadas:** RN0046, RN0047, RN0048, RN0049, RN0065
+- **Descrição:** em `/pesquisa` (aba Obras), visitantes e Usuários Padrão consultam, de forma paginada, as Obras públicas. A busca textual parcial considera título, título original, título romanizado e nome do autor. Os filtros são tipo de Obra (restrito aos tipos compatíveis com o país selecionado), país de origem, demografias e gêneros (múltiplos, por interseção), editora original, revista de serialização, status da publicação original e anos de início e fim. Na Web, a ordenação é sempre por título, crescente (padrão) ou decrescente. A ordenação por título original ou por data de cadastro está disponível na API. Busca, filtros, ordenação e página ficam registrados na URL. As opções de filtro vêm do sistema e omitem valores inativos e o gênero restrito para quem não pode ver conteúdo adulto.
 
 #### RF0037 — Consultar vitrine pública de Edições
 
 - **Módulo:** Catálogo Público e Busca
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0046, RN0047, RN0048, RN0049, RN0051
-- **Descrição:** O sistema deve permitir que visitantes e usuários autenticados consultem a vitrine pública de Edições físicas mediante listagem paginada e busca textual híbrida pelos seguintes dados: Título da Obra matriz Título Original da Obra matriz Autor da Obra matriz A consulta também deve admitir filtros por Editora Brasileira, Formato da Edição, Acabamento da Edição. A consulta deve retornar somente Edições públicas vinculadas a Obras públicas e deve preservar os termos fundamentais ao alternar entre as vitrines de Obras e Edições.
+- **Estado:** Vigente
+- **RNs associadas:** RN0046, RN0047, RN0048, RN0049, RN0051, RN0065, RN0069
+- **Descrição:** em `/pesquisa` (aba Edições), o sistema lista, de forma paginada, as Edições públicas de Obras públicas. A busca considera título, título original, título romanizado e autor da Obra. Os filtros são editora brasileira, formato, acabamento, número da edição, status no Brasil e anos de início e fim da publicação brasileira (derivados das datas dos Volumes públicos). Na Web, a ordenação é sempre por título da Obra, crescente (padrão) ou decrescente. A ordenação por número da edição ou por data de cadastro está disponível na API. Cada Edição mostra capa derivada, título da Obra e “Nª edição · editora”. Autores, formato, acabamento e total de Volumes públicos estão disponíveis na API, mas a Web não os exibe no cartão. Ao alternar entre as abas, o termo e a ordenação compatível são preservados.
+
+#### RF0051 — Consultar Obras públicas de um Autor
+
+- **Módulo:** Catálogo Público e Busca
+- **Prioridade:** Importante
+- **Estado:** Vigente
+- **RNs associadas:** RN0046, RN0048, RN0065
+- **Descrição:** em `/autores/{authorId}`, o sistema exibe o nome do autor e, de forma paginada, as Obras públicas em que ele tem crédito, na mesma grade da vitrine, em ordem crescente de título. A Web não oferece outra ordenação. A ordem decrescente e a ordenação por título original ou por data de cadastro estão disponíveis na API. Autor inexistente ou identificador inválido resulta em “Autor não encontrado.” e há estado vazio com retorno ao catálogo.
 
 ### 3.4. Módulo: Catálogo Público e Navegação Profunda
 
@@ -339,29 +450,33 @@ Visão do Produto: O CoMangá é uma aplicação web independente, projetada par
 
 - **Módulo:** Catálogo Público e Navegação Profunda
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0046, RN0048, RN0050
-- **Descrição:** O sistema deve permitir que visitantes e usuários autenticados visualizem a ficha pública completa de uma Obra, contendo: Título e Título Original Capa País de origem e Tipo de Obra Autores e Papéis de autoria Editoras Originais e Pré-publicações Demografias e Gêneros Status, início e fim da publicação original Número de volumes originais Indicador de conteúdo adulto Edições públicas vinculadas Quando houver sessão autenticada válida, a resposta pode ser enriquecida com informações personalizadas de posse e intenção de compra.
+- **Estado:** Vigente
+- **RNs associadas:** RN0046, RN0048, RN0050, RN0061, RN0065, RN0071, RN0072
+- **Descrição:** em `/obras/{slug}`, visitantes e Usuários Padrão veem a ficha pública da Obra: título, título original e título romanizado, capa, país de origem, tipo de Obra, autores com seus papéis (ordenados pelo crédito), editoras originais e pré-publicações, demografias e gêneros, status e anos da publicação original, sinopse e Edições públicas (RF0039). A indicação de lançamento direto está disponível na API, mas a Web não a exibe. Metadados opcionais ausentes são omitidos (RN0072). Divergência na implementação: ver seção 6.3. O enriquecimento com dados pessoais de posse e desejo (RN0050) é futuro.
 
 #### RF0039 — Consultar Edições públicas vinculadas a uma Obra
 
 - **Módulo:** Catálogo Público e Navegação Profunda
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0046, RN0048, RN0050, RN0051
-- **Descrição:** O sistema deve permitir que visitantes e usuários autenticados consultem as Edições públicas vinculadas a uma Obra pública. Para cada Edição, deve apresentar uma prévia com: Capa da Edição Número cronológico da Edição Editora Brasileira Tipo Status de publicação no Brasil Total calculado de Volumes cadastrados Amostragem dos Volumes públicos iniciais A consulta deve omitir Edições privadas e Volumes privados.
+- **Estado:** Vigente
+- **RNs associadas:** RN0046, RN0048, RN0050, RN0051, RN0061, RN0065, RN0069, RN0072
+- **Descrição:** na ficha da Obra, cada Edição pública aparece com número da edição, editora brasileira, status no Brasil acompanhado do total de Volumes públicos e prévia dos três primeiros Volumes públicos. A capa derivada, o formato, o acabamento e o miolo de cada Edição estão disponíveis na API, mas a Web não os exibe nessa lista. Edições e Volumes privados são omitidos.
 
 #### RF0040 — Consultar detalhes públicos de uma Edição
 
 - **Módulo:** Catálogo Público e Navegação Profunda
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0046, RN0048, RN0050, RN0051
-- **Descrição:** O sistema deve permitir que visitantes e usuários autenticados visualizem a ficha pública completa de uma Edição, contendo: Obra matriz vinculada Capa da Edição Editora Brasileira Tipo de Edição, Acabamento e Formato Número cronológico da Edição Status de publicação no Brasil Total calculado de Volumes cadastrados Listagem paginada dos Volumes públicos vinculados A consulta deve permitir navegação contextual para a Obra matriz e para cada Volume público da Edição.
+- **Estado:** Vigente
+- **RNs associadas:** RN0046, RN0048, RN0050, RN0051, RN0061, RN0065, RN0069, RN0071, RN0072
+- **Descrição:** em `/obras/{slug}/edicao/{editionId}`, o sistema exibe o título da Obra, a capa derivada, a editora brasileira, o número da edição, o status no Brasil, o formato, o acabamento e os miolos quando informados (exibidos empilhados), os anos de início e fim da publicação no Brasil (derivados dos Volumes públicos, com o fim apenas para Edição “Completa”), o total de Volumes públicos e a listagem paginada desses Volumes, com página registrada na URL. O título original e os autores da Obra estão disponíveis na API, mas a Web não os exibe nessa página. Metadados opcionais ausentes são omitidos (RN0072). Divergência na implementação: ver seção 6.3. Há navegação para a Obra e para cada Volume por URLs contextualizadas.
 
 #### RF0041 — Consultar detalhes públicos de um Volume
 
 - **Módulo:** Catálogo Público e Navegação Profunda
 - **Prioridade:** Essencial
-- **RNs associadas:** RN0046, RN0048, RN0050
-- **Descrição:** O sistema deve permitir que visitantes e usuários autenticados visualizem a ficha pública completa de um Volume, contendo: Obra matriz e Edição vinculadas Capa e Número do Volume Indicação de Volume Único Data de publicação conforme a precisão disponível Moeda e Preço de capa Número de páginas ISBN-10 e ISBN-13 Link afiliado Sinopse do Volume A consulta deve permitir navegação contextual de retorno para a Edição e a Obra matriz.
+- **Estado:** Vigente
+- **RNs associadas:** RN0046, RN0048, RN0050, RN0061, RN0065, RN0070, RN0071, RN0072
+- **Descrição:** em `/obras/{slug}/edicao/{editionId}/volume/{volumeId}`, o sistema exibe Obra e Edição vinculadas, capa, número ou indicação de volume único, data de lançamento conforme a precisão, preço com moeda, número de páginas, ISBN-10, ISBN-13 e sinopse. Há retorno contextual para a Edição e para a Obra e navegação para os Volumes públicos anterior e seguinte da mesma Edição. Com link de afiliado, o botão “Comprar na Amazon” abre a loja em nova aba. Sem link, o botão aparece desabilitado com a marca “Indisponível”. Os botões “Coleção” e “Lista de Desejos” ainda não têm ação (Estante e Lista de Desejos são futuras).
 
 ### 3.5. Módulo: Catálogo Público e Calendário de Lançamentos
 
@@ -369,401 +484,613 @@ Visão do Produto: O CoMangá é uma aplicação web independente, projetada par
 
 - **Módulo:** Catálogo Público e Calendário de Lançamentos
 - **Prioridade:** Essencial
+- **Estado:** Futuro (planejado)
 - **RNs associadas:** RN0046, RN0048, RN0052
-- **Descrição:** O sistema deve permitir que visitantes e usuários autenticados consultem os Volumes públicos previstos para determinado mês e ano, desde que a precisão da data armazenada permita identificar o mês, exibindo: Obra matriz Edição vinculada Número e capa do Volume Data de publicação Editora Brasileira A consulta deve permitir filtro por Editora Brasileira e busca textual por Título, Título Original ou Autor da Obra matriz. Na ausência de mês e ano, deve utilizar o período vigente no servidor.
+- **Descrição:** o sistema deverá permitir que visitantes e usuários consultem os Volumes públicos previstos para determinado mês e ano, desde que a precisão da data permita identificar o mês, exibindo Obra, Edição, número e capa do Volume, data de lançamento e editora brasileira, com filtro por editora e busca por título ou autor. Sem mês e ano informados, deverá usar o período vigente. Na Web existe apenas a tela “Checklist” (`/checklist`), com o aviso “Em breve: Acompanhe seus lançamentos mensais.”
 
 ### 3.6. Módulo: Estante Digital e Lista de Desejos
+
+Todos os requisitos desta seção estão no estado **Futuro (planejado)**. A Web tem apenas as telas “Em breve” `/colecao` e `/desejos`, a tela de seleção visual de Volumes (`/obras/{slug}/edicao/{editionId}/selecionar/{estante|desejos}`), que não grava nada, e os botões sem ação na página do Volume. Não há tabelas nem rotas de API para acervo pessoal.
 
 #### RF0043 — Registrar posse individual de Volume
 
 - **Módulo:** Estante Digital e Lista de Desejos
 - **Prioridade:** Essencial
+- **Estado:** Futuro (planejado)
 - **RNs associadas:** RN0053, RN0054, RN0055, RN0056
-- **Descrição:** O sistema deve permitir que um usuário autenticado registre um Volume público como adquirido, criando um vínculo entre sua conta e o Volume na Estante Digital com o estado inicial de leitura como “não lido”. Após a criação, o mesmo Volume deve ser removido automaticamente da Lista de Desejos do usuário, caso esteja presente.
+- **Descrição:** o usuário autenticado deverá registrar um Volume público como adquirido, criando o vínculo na Estante Digital com estado de leitura “não lido” e removendo o mesmo Volume da Lista de Desejos, se presente.
 
 #### RF0044 — Atualizar estado de leitura ou remover posse individual de Volume
 
 - **Módulo:** Estante Digital e Lista de Desejos
 - **Prioridade:** Essencial
+- **Estado:** Futuro (planejado)
 - **RNs associadas:** RN0053, RN0055
-- **Descrição:** O sistema deve permitir que um usuário autenticado marque como lido ou não lido um Volume que já possua na Estante Digital. O sistema também deve permitir a remoção do vínculo de posse com um Volume específico. A operação deve afetar somente o vínculo do usuário, sem excluir o Volume do catálogo; ao remover a posse, o estado de leitura associado ao vínculo deve ser removido junto.
+- **Descrição:** o usuário deverá marcar como lido ou não lido um Volume da Estante Digital e remover o vínculo de posse, sem excluir o Volume do catálogo. Ao remover a posse, o estado de leitura é removido junto.
 
 #### RF0045 — Sincronizar registros de posse em lote
 
 - **Módulo:** Estante Digital e Lista de Desejos
 - **Prioridade:** Essencial
+- **Estado:** Futuro (planejado)
 - **RNs associadas:** RN0053, RN0054, RN0055, RN0056
-- **Descrição:** O sistema deve permitir que um usuário autenticado, a partir de uma Edição, adicione e/ou remova múltiplos Volumes de sua Estante Digital em uma única operação transacional. Os Volumes adicionados devem ser removidos da Lista de Desejos e devem iniciar como “não lidos”; os vínculos removidos devem eliminar junto seus estados de leitura. Os vínculos devem permanecer únicos por usuário e Volume.
+- **Descrição:** a partir de uma Edição, o usuário deverá adicionar e remover vários Volumes da Estante Digital numa única operação transacional. Os adicionados saem da Lista de Desejos e iniciam “não lidos”. Os removidos eliminam seus estados de leitura. A seleção visual de Volumes já existe na Web, sem gravação.
 
 #### RF0046 — Consultar registros da Estante Digital
 
 - **Módulo:** Estante Digital e Lista de Desejos
 - **Prioridade:** Essencial
+- **Estado:** Futuro (planejado)
 - **RNs associadas:** RN0053, RN0055, RN0056
-- **Descrição:** O sistema deve permitir que um usuário autenticado consulte os Volumes de sua Estante Digital, agrupados por Obra e Edição. A consulta deve apresentar a progressão da coleção em relação aos Volumes públicos cadastrados em cada Edição e o estado “lido” ou “não lido” de cada vínculo de posse retornado.
+- **Descrição:** o usuário deverá consultar os Volumes da Estante agrupados por Obra e Edição, com a progressão em relação aos Volumes públicos de cada Edição e o estado “lido” ou “não lido” de cada vínculo.
 
 #### RF0047 — Registrar intenção de compra
 
 - **Módulo:** Estante Digital e Lista de Desejos
 - **Prioridade:** Essencial
+- **Estado:** Futuro (planejado)
 - **RNs associadas:** RN0053, RN0055, RN0056, RN0057
-- **Descrição:** O sistema deve permitir que um usuário autenticado adicione um Volume público à sua Lista de Desejos. Antes de criar o vínculo, deve verificar se o usuário já possui o mesmo Volume na Estante Digital.
+- **Descrição:** o usuário deverá adicionar um Volume público à Lista de Desejos, desde que ainda não o possua na Estante Digital.
 
 #### RF0048 — Remover intenção de compra
 
 - **Módulo:** Estante Digital e Lista de Desejos
 - **Prioridade:** Essencial
+- **Estado:** Futuro (planejado)
 - **RNs associadas:** RN0053, RN0055
-- **Descrição:** O sistema deve permitir que um usuário autenticado remova um Volume de sua Lista de Desejos. A operação deve afetar somente o vínculo do usuário, sem excluir o Volume do catálogo.
+- **Descrição:** o usuário deverá remover um Volume da Lista de Desejos, sem excluí-lo do catálogo.
 
 #### RF0049 — Consultar Lista de Desejos
 
 - **Módulo:** Estante Digital e Lista de Desejos
 - **Prioridade:** Essencial
+- **Estado:** Futuro (planejado)
 - **RNs associadas:** RN0053, RN0055, RN0056
-- **Descrição:** O sistema deve permitir que um usuário autenticado consulte os Volumes de sua Lista de Desejos com seus dados públicos essenciais. Registros que deixarem de estar públicos em qualquer nível da hierarquia devem ser omitidos enquanto permanecerem indisponíveis.
+- **Descrição:** o usuário deverá consultar os Volumes da Lista de Desejos com seus dados públicos essenciais. Registros que deixarem de estar públicos em qualquer nível da hierarquia serão omitidos enquanto permanecerem indisponíveis.
 
-#### RF0050 — Importar e gerenciar capa interna por URL
+## 4. Regras de Negócio
 
-- **Módulo:** Administração
-- **Prioridade:** Essencial
-- **RNs associadas:** RN0058, RN0059, RN0060, RN0061
-- **Descrição:** O sistema deve permitir que um Administrador importe individualmente uma capa para uma Obra, Edição ou Volume mediante uma URL HTTPS. O backend deve baixar, validar, processar e armazenar a imagem na infraestrutura de mídia controlada pelo CoMangá antes de associá-la à entidade. A operação deve permitir importação e substituição atômica, sem utilizar a URL externa como referência de exibição da capa. Não deve ser permitida a remoção de uma capa associada sem a substituição bem-sucedida por outra capa interna válida.
-
-## 4. Regras de Negócio:
+### 4.1. Conta, sessão e perfis
 
 #### RN0001 — Política de formatação de Username da conta de acesso
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0001, RF0010
-- **Descrição:** Para o preenchimento ou alteração do Nome de Usuário, o sistema deve exigir o cumprimento simultâneo das seguintes condições de formatação: Ter comprimento entre 3 e 20 caracteres. Conter exclusivamente caracteres alfanuméricos (letras sem acentos e números) e o caractere sublinhado (_). Não conter espaços em branco ou quaisquer outros caracteres especiais. Caso o usuário tente submeter um Nome de Usuário que viole qualquer uma destas condições, o sistema deve recusar a transação e retornar a seguinte mensagem de erro específica para o campo: "Utilize entre 3 e 20 caracteres, sem espaços, acentos ou caracteres especiais."
+- **Descrição:** o nome de usuário deve ter de 3 a 20 caracteres e conter apenas letras sem acento, números e sublinhado (`_`), sem espaços. A mesma regra vale no cadastro e na alteração. A violação é recusada com: "Utilize entre 3 e 20 caracteres, sem espaços, acentos ou caracteres especiais."
 
 #### RN0002 — Política de força da senha da conta de acesso
 
-- **RFs dependentes:** RF0001, RF0006, RF0007, RF0008, RF0012
-- **Descrição:** Para a definição ou alteração da senha de acesso, o sistema deve exigir simultaneamente: Comprimento mínimo de 8 caracteres. Ao menos uma letra maiúscula. Ao menos uma letra minúscula. Ao menos um número. Ao menos um caractere especial. Caso a senha viole qualquer condição, o sistema deve recusar a transação e retornar: "Utilize no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial."
+- **Estado:** Vigente
+- **RFs dependentes:** RF0001, RF0007, RF0008
+- **Descrição:** a senha deve ter no mínimo 8 caracteres, com ao menos uma letra maiúscula, uma minúscula, um número e um caractere especial. A violação é recusada com: "Utilize no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial." A senha também não pode ultrapassar 72 bytes em UTF-8 (limite do algoritmo de hash). Nesse caso, a mensagem é: "A senha deve ter no máximo 72 bytes em UTF-8; acentos e emojis podem ocupar mais de um byte."
 
 #### RN0003 — Prevenção de duplicidade de e-mails de contas de acesso
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0001
-- **Descrição:** O sistema deve garantir a unicidade absoluta de endereços de e-mail das contas de acesso no banco de dados, impedindo a colisão de credenciais. Durante qualquer tentativa de cadastro de uma nova conta, o sistema deve exigir que o e-mail submetido não esteja vinculado a nenhuma outra conta existente, independentemente do status atual dessa conta (Pendente, Ativada). Caso essa condição seja violada, o sistema deve recusar a transação e retornar o erro: "Este endereço de e-mail já está em uso. Tente fazer login ou recuperar sua senha."
+- **Descrição:** o e-mail é único entre todas as contas, qualquer que seja o status. O cadastro com e-mail já usado é recusado com: "Este endereço de e-mail já está em uso. Tente fazer login ou recuperar sua senha."
 
 #### RN0004 — Prevenção de duplicidade de nomes de usuário
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0001, RF0010
-- **Descrição:** O sistema deve garantir a unicidade absoluta dos nomes de usuário no banco de dados. Durante cadastros ou alterações, o nome submetido não pode estar vinculado a outra conta. Caso essa condição seja violada, o sistema deve recusar a transação e retornar: "Este nome de usuário não está disponível. Por favor, escolha outro."
+- **Descrição:** o nome de usuário é único. O cadastro ou a alteração para um nome já usado por outra conta é recusado com: "Este nome de usuário não está disponível. Por favor, escolha outro."
 
 #### RN0005 — Atribuição compulsória de nível de acesso padrão a novas contas
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0001
-- **Descrição:** Toda nova conta deve receber compulsoriamente o nível de acesso “Usuário Padrão”.
+- **Descrição:** toda nova conta recebe compulsoriamente o perfil Usuário Padrão, e somente ele. O perfil Administrador só pode ser concedido por outro Administrador (RF0035).
 
 #### RN0006 — Atribuição compulsória da preferência não exibição de conteúdo adulto a novas contas
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0001
-- **Descrição:** Para toda nova conta de acesso, o sistema deve atribuir compulsoriamente a preferência de exibição de conteúdo +18 como "Desativada".
+- **Descrição:** toda nova conta nasce com a preferência de conteúdo adulto desativada.
 
 #### RN0007 — Tempo de expiração do token de ativação da conta de acesso
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0001, RF0002, RF0003
-- **Descrição:** O tempo de expiração do token de ativação é de 24 horas. Se o usuário tentar verificar a conta com um token expirado, o sistema deve recusar a transação, e retornar a mensagem de erro: "Este link de ativação expirou. Solicite um novo e-mail de ativação."
+- **Descrição:** o token de ativação expira 24 horas após a geração. O uso de token expirado é recusado com: "Este link de ativação expirou. Solicite um novo e-mail de ativação."
 
 #### RN0008 — Invalidação por unicidade do token de ativação
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0002
-- **Descrição:** O token de ativação da conta de acesso se torna inválido imediatamente após o primeiro uso bem-sucedido. Se o usuário tentar ativar a conta com um token de ativação invalidado, o sistema deve recusar a transação e retornar uma mensagem de erro “Link de ativação inválido!”.
+- **Descrição:** o token de ativação é invalidado no primeiro uso bem-sucedido. Nova tentativa, ou token inexistente, é recusada com: "Link de ativação inválido!"
 
 #### RN0009 — Recusa do reenvio do link de ativação a contas não existentes
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0003
-- **Descrição:** Caso o e-mail informado para reenvio do link de ativação não exista no banco de dados, o sistema deve recusar a transação e retornar: "Endereço de e-mail não cadastrado."
+- **Descrição:** o reenvio para e-mail não cadastrado é recusado com: "Endereço de e-mail não cadastrado"
 
 #### RN0010 — Recusa do reenvio do link de ativação a contas ativadas
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0003
-- **Descrição:** Caso o e-mail fornecido ao pedir o reenvio do link de ativação pertença a uma conta com o status de acesso "Ativada", o sistema deve recusar a transação e retornar uma mensagem erro: “Este endereço de e-mail pertence a uma conta ativada.”
+- **Descrição:** o reenvio para conta “Ativada” é recusado com: "Este endereço de e-mail pertence a uma conta ativada." Para conta “Bloqueada”, a recusa é: "Somente contas pendentes podem solicitar um novo link de ativação."
 
 #### RN0011 — Invalidação por sobreposição do novo token de ativação
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0003
-- **Descrição:** A geração de um novo token de ativação deve invalidar imediatamente qualquer token de ativação anterior vinculado àquela conta. Se o usuário tentar ativar a conta com um token de ativação invalidado, o sistema deve recusar a transação e retornar uma mensagem de erro “Link de ativação inválido!”.
+- **Descrição:** um novo token de ativação invalida o anterior. O uso do token antigo é recusado com: "Link de ativação inválido!"
 
 #### RN0012 — Bloqueio de sessão por credenciais inválidas
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0004
-- **Descrição:** Caso o usuário tente autenticar-se com e-mail e/ou senha que não correspondam a uma conta válida, o sistema deve recusar a transação e retornar: "Credenciais inválidas!"
+- **Descrição:** e-mail ou senha que não correspondam a uma conta são recusados com: "Credenciais inválidas!"
 
 #### RN0013 — Bloqueio de sessão por status de acesso pendente
 
-- **RFs dependentes:** RF0004
-- **Descrição:** Caso o usuário realize uma tentativa de login em uma conta que está com o status de acesso “Pendente”, o sistema deve recusar a transação e retornar a mensagem de erro: “Conta de acesso pendente. Ative a conta com o e-mail de verificação enviado anteriormente.”
+- **Estado:** Vigente
+- **RFs dependentes:** RF0004, RF0054
+- **Descrição:** o login em conta “Pendente” é recusado com: "Conta de acesso pendente. Ative a conta com o e-mail de verificação enviado anteriormente." O login em conta “Bloqueada” é recusado com: "Esta conta foi bloqueada por razões de segurança." Sessões de contas que deixem de estar “Ativada” não autorizam rotas protegidas.
 
 #### RN0014 — Política de persistência de sessão de acesso
 
-- **RFs dependentes:** RF0004, RF0005, RF0007, RF0008
-- **Descrição:** A autenticação deve utilizar sessão stateful persistida no servidor. A cada login bem-sucedido, o sistema deve gerar um identificador opaco e criptograficamente seguro, armazenar somente seu hash na tabela de sessões e enviar o valor original ao cliente por cookie HttpOnly. A sessão deve ser considerada válida apenas enquanto existir, não estiver revogada e estiver vinculada a uma conta apta ao acesso. O ciclo de vida da sessão deve ser encerrado, no mínimo, nas seguintes situações: Logout explícito do usuário. Redefinição ou alteração de senha, quando aplicável. Exclusão da conta. Caso uma rota protegida receba uma sessão ausente, inválida ou revogada, o sistema deve retornar: "Sua sessão é inválida ou foi encerrada. Por favor, faça login novamente."
+- **Estado:** Vigente
+- **RFs dependentes:** RF0004, RF0005, RF0007, RF0008, RF0012, RF0053
+- **Descrição:** cada login cria uma sessão no servidor com identificador opaco e aleatório. Apenas o resumo criptográfico do identificador é armazenado, e o valor original vai ao navegador por cookie HttpOnly. A sessão vale enquanto existir, não estiver revogada e pertencer a uma conta Ativada. Não há expiração por tempo. A sessão é encerrada:
+  - no logout (sessão atual);
+  - na redefinição de senha por token (todas as sessões da conta);
+  - na alteração de senha autenticada (todas, exceto a sessão usada na alteração);
+  - na exclusão da conta (todas).
+
+  Rota protegida sem sessão válida responde: "Sua sessão é inválida ou foi encerrada. Por favor, faça login novamente." A Web exibe a mesma mensagem ao enviar um visitante de uma página protegida para o login.
 
 #### RN0015 — Resposta neutra à solicitação de redefinição de senha
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0006
-- **Descrição:** Para uma solicitação com e-mail de formato válido e dentro do limite de solicitações, o sistema deve retornar HTTP 200 e a mensagem “Se houver uma conta apta para este e-mail, enviaremos as instruções de recuperação.”, independentemente da existência ou do status da conta e de falha no envio por SMTP. Um e-mail inexistente não deve gerar token nem disparo de mensagem. Não retornar campos, códigos ou detalhes que revelem se a conta existe ou se o e-mail foi enviado. Campos ausentes ou formato inválido podem retornar erro de validação; o limite de solicitações pode retornar HTTP 429 independentemente da existência da conta. Falhas técnicas devem ser registradas sem senhas, tokens ou credenciais.
+- **Descrição:** para e-mail com formato válido e dentro do limite de solicitações, a resposta é sempre sucesso com: "Se houver uma conta apta para este e-mail, enviaremos as instruções de recuperação.", independentemente da existência da conta, do seu status, de falha no envio do e-mail e do intervalo mínimo entre solicitações. A resposta é enviada antes da consulta à conta, para não revelar elegibilidade pelo tempo de resposta. E-mail inexistente não gera token nem mensagem. Uma nova emissão para a mesma conta só ocorre 60 segundos após a anterior; antes disso, a solicitação é ignorada em silêncio. E-mail com formato inválido é recusado com "Informe um e-mail válido.". O excesso de solicitações por IP é recusado conforme RNF08. Falhas técnicas são registradas sem senhas, tokens ou credenciais.
 
 #### RN0016 — Elegibilidade da conta para recuperação de senha
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0006
-- **Descrição:** Somente uma conta com status “Ativada” pode receber token e e-mail de recuperação. Para contas pendentes, bloqueadas ou com outro status não elegível, o sistema não deve gerar token nem enviar e-mail, mas deve retornar a mesma resposta neutra definida em RN0015. A recuperação não deve ativar uma conta pendente nem desbloquear uma conta bloqueada.
+- **Descrição:** somente conta “Ativada” recebe token e e-mail de recuperação. Contas “Pendente” ou “Bloqueada” recebem a mesma resposta neutra, sem token nem e-mail. A recuperação não ativa nem desbloqueia contas.
 
 #### RN0017 — Tempo de expiração do token de redefinição de senha de acesso
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0006, RF0007
-- **Descrição:** O tempo de expiração do token de redefinição é de 1 hora após a geração; ao atingir a data de expiração, ele já é inválido. O token deve ser criptograficamente aleatório e persistido somente como hash em estrutura própria, separada dos tokens de ativação. O valor bruto deve existir apenas na geração e no link de recuperação, nunca em logs ou respostas da API. Se o usuário tentar redefinir a senha com um token expirado, o sistema deve recusar a transação e retornar a mensagem de erro: "Este link de redefinição expirou. Solicite a redefinição novamente."
+- **Descrição:** o token de redefinição expira 1 hora após a geração (ao atingir a expiração, já é inválido). É aleatório, armazenado apenas como resumo criptográfico e separado dos tokens de ativação. O valor original existe somente no link enviado, nunca em logs ou respostas. O uso de token expirado é recusado com: "Este link de redefinição expirou. Solicite a redefinição novamente."
 
 #### RN0018 — Invalidação por unicidade do token de redefinição
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0007
-- **Descrição:** O token de redefinição de senha torna-se inválido imediatamente após o primeiro uso bem-sucedido. Uma nova tentativa com o mesmo token deve ser recusada com a mensagem: "Link de redefinição inválido!"
+- **Descrição:** o token de redefinição é invalidado no primeiro uso bem-sucedido. Nova tentativa, token inexistente ou com formato inválido é recusado com: "Link de redefinição inválido!"
 
 #### RN0019 — Invalidação por sobreposição do novo token de redefinição
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0007
-- **Descrição:** A geração de um novo token de redefinição deve invalidar imediatamente qualquer token de redefinição anterior vinculado àquela conta. Se o usuário tentar redefinir a senha com um token de redefinição invalidado, o sistema deve recusar a transação e retornar uma mensagem de erro “Link de redefinição inválido!”.
+- **Descrição:** um novo token de redefinição invalida os anteriores ainda não usados da conta. O uso de token sobreposto é recusado com: "Link de redefinição inválido!"
 
 #### RN0020 — Recusa de transação por divergência em confirmação de senha
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0001, RF0007, RF0008
-- **Descrição:** Caso o usuário tente realizar uma transação que exija a criação ou alteração de credenciais e os parâmetros de "Senha" e "Confirmação de Senha" apresentem valores diferentes, o sistema deve recusar a requisição e retornar a mensagem de erro: "Divergência nos valores da senha e confirmação de senha!"
+- **Descrição:** quando senha (ou nova senha) e confirmação diferem, a operação é recusada com: "Divergência nos valores da senha e confirmação de senha!" Na redefinição por token (RF0007), a Web recusa antes de consultar a API, com "As senhas não conferem." no campo de confirmação.
 
 #### RN0021 — Recusa de transação por divergência de credencial vigente
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0008, RF0012
-- **Descrição:** Caso o usuário tente realizar uma transação de alto privilégio em sessão ativa que exija validação de segurança adicional, e o parâmetro de "Senha Atual" enviado não corresponda à senha vigente da conta de acesso registrada no banco de dados, o sistema deve recusar a transação e retornar a mensagem de erro: "Senha atual incorreta!"
+- **Descrição:** a alteração de senha autenticada e a exclusão da conta exigem a senha atual. Senha atual incorreta é recusada com: "Senha atual incorreta!"
+
+#### RN0073 — Nova senha diferente da atual
+
+- **Estado:** Vigente
+- **RFs dependentes:** RF0008
+- **Descrição:** na alteração de senha autenticada, a nova senha não pode ser igual à senha atual. A tentativa é recusada com "A nova senha deve ser diferente da senha atual.", e a Web a recusa antes de consultar a API. Não há histórico de senhas anteriores nem essa verificação na redefinição por e-mail.
 
 #### RN0022 — Política de isolamento e privacidade de manipulação de dados do perfil
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0009, RF0010, RF0011, RF0012
-- **Descrição:** A consulta, alteração e exclusão dos dados do perfil devem utilizar exclusivamente a identidade obtida da sessão stateful validada. Rotas destinadas ao próprio usuário não devem aceitar o identificador da conta pelo corpo ou pela URL. Em rotas administrativas, o sistema deve validar explicitamente o privilégio necessário. Qualquer tentativa não autorizada deve ser recusada com: "Acesso negado: Você não tem permissão para acessar ou modificar os dados deste perfil."
+- **Descrição:** consulta, alteração e exclusão dos dados da própria conta usam exclusivamente a identidade da sessão validada. As rotas da própria conta (`/api/users/me...`) não recebem identificador de conta pela URL e ignoram qualquer identificador enviado no corpo, de modo que só afetam a conta da sessão. Operações sobre outras contas existem apenas nas rotas administrativas e exigem o perfil Administrador ativo (RN0064).
+
+#### RN0062 — Perfis concedidos, perfil preferido e perfil ativo
+
+- **Estado:** Vigente
+- **RFs dependentes:** RF0004, RF0009, RF0034, RF0035, RF0052
+- **Descrição:** uma conta pode ter mais de um perfil concedido: Usuário Padrão (sempre presente) e, opcionalmente, Administrador. Cada sessão tem um perfil ativo, que precisa estar entre os perfis concedidos. Caso contrário, vale Usuário Padrão. O perfil ativo de uma sessão não altera o das outras sessões abertas. A troca do perfil ativo grava o perfil preferido da conta, usado como perfil ativo no próximo login se ainda estiver concedido. Trocar o perfil ativo não concede nem remove perfis. Pedir um perfil inexistente é recusado com "Perfil de acesso inexistente." e pedir um perfil não concedido, com "Acesso negado: sua conta não possui este perfil de acesso.". Quando o perfil Administrador é removido, as sessões abertas com ele ativo passam a Usuário Padrão e deixam de ter acesso administrativo.
+
+#### RN0063 — Proteção do último Administrador
+
+- **Estado:** Vigente
+- **RFs dependentes:** RF0012, RF0035
+- **Descrição:** o sistema não pode ficar sem nenhum Administrador efetivo (conta Ativada com o perfil Administrador). A remoção do perfil do último Administrador e a exclusão da conta do último Administrador são recusadas com: "Operação bloqueada: o sistema ficaria sem nenhum administrador ativo." Operações concorrentes são serializadas para que a regra valha mesmo com pedidos simultâneos.
+
+#### RN0064 — Autorização administrativa pelo perfil ativo
+
+- **Estado:** Vigente
+- **RFs dependentes:** RF0013 a RF0035, RF0050, RF0052, RF0053
+- **Descrição:** todas as rotas administrativas da API exigem sessão válida com o perfil Administrador ativo e ainda concedido à conta. Usuário Padrão, ou conta com Administrador concedido mas Usuário Padrão ativo, recebe recusa com a mensagem "Acesso negado: voce nao possui permissao para executar esta operacao." Divergência na implementação: ver seção 6.3. Na Web, quem acessa uma página administrativa sem o perfil Administrador ativo é levado ao próprio perfil com o aviso "Acesso negado: Você não tem permissão para acessar esta área."
+
+#### RN0065 — Separação de páginas por sessão e perfil ativo na Web
+
+- **Estado:** Vigente
+- **RFs dependentes:** RF0036, RF0037, RF0038, RF0039, RF0040, RF0041, RF0051, RF0052, RF0053
+- **Descrição:**
+  - **Páginas de visitante** (`/entrar`, `/cadastrar`, `/reenvio`, `/recuperar-senha`, `/redefinir-senha/{token}`): usuário autenticado é levado ao próprio perfil (`/perfil/{nome de usuário}`). A raiz `/` leva a `/entrar`. A ativação (`/activate/{token}`) não tem restrição.
+  - **Páginas protegidas** (`/perfil`, `/perfil/{nome de usuário}` e páginas administrativas): visitante é levado a `/entrar` com o aviso de sessão inválida (RN0014).
+  - **Páginas administrativas** (`/admin/...`): exigem o perfil Administrador ativo (RN0064).
+  - **Páginas públicas do catálogo** (`/pesquisa`, `/autores/{id}`, `/obras/{slug}` e suas rotas de Edição, seleção e Volume): com o perfil Administrador ativo, a pessoa é levada ao próprio perfil com o aviso exato "Mude o perfil para usuário padrão para acessar essa página." Visitantes e Usuários Padrão acessam normalmente.
+
+  As telas “Em breve” (`/colecao`, `/checklist`, `/desejos`) não têm essa proteção. Divergência na implementação (rotas `/colecao/{slug}/edicao/{editionId}` e `/colecao/{slug}/edicao/{editionId}/selecionar/{modo}`): ver seção 6.3.
+
+### 4.2. Obra, autoria e classificações
 
 #### RN0023 — Política de multiplicidade de vínculos da Obra
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0013, RF0014
-- **Descrição:** Uma Obra pode possuir múltiplos autores, papéis de autoria, gêneros, demografias, editoras originais e pré-publicações. Cada autor deve aparecer uma única vez na Obra, podendo receber um ou mais papéis. Autores devem ser ordenados automaticamente pela maior prioridade entre seus papéis; editoras originais e pré-publicações devem preservar a ordem definida pelo administrador. A repetição do mesmo autor na requisição deve ser recusada com: "Autor duplicado!"
+- **Descrição:** uma Obra pode ter vários autores, papéis de autoria, gêneros, demografias, editoras originais e pré-publicações. Cada autor aparece uma única vez na Obra, com um ou mais papéis. A repetição do mesmo autor é recusada com: "Autor duplicado!". Outros valores repetidos nos vínculos são recusados com "Valores duplicados nos vinculos da Obra.". Os créditos são ordenados automaticamente para exibição pelo papel de maior prioridade de cada autor, na ordem Criador Original, História Original, História e Arte, História, Arte, Ilustrador, Design de Personagens. Em caso de empate, a ordem é alfabética pelo nome do autor. Essa ordenação por crédito vale na ficha pública da Obra e na área administrativa. Nas listagens (vitrines, página do Autor e ficha da Edição), os autores seguem a posição persistida, que no cadastro é a ordem em que aparecem na lista de autores do formulário. A Web reordena essa lista pelo crédito sempre que um papel é marcado ou desmarcado. Não há ordenação manual de autores. Editoras originais e pré-publicações preservam a ordem definida pelo Administrador. As posições persistidas começam em 0, são contíguas e são normalizadas pelo sistema na ordem recebida.
 
 #### RN0024 — Restrição de dados das Obras a domínios de referência
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0013, RF0014
-- **Descrição:** Os dados estruturados das Obras devem utilizar domínios controlados, sendo vedado o uso de texto livre fora dos valores permitidos. Os seguintes campos devem utilizar valores nativos definidos pelo sistema: País de origem Papéis de autoria Demografias Status de publicação original Os seguintes campos devem utilizar valores administrativos cadastrados e ativos: Autores Tipo de Obra Gêneros Editoras Originais Pré-publicações Autores, Tipos de Obra, Editoras Originais e Pré-publicações devem respeitar as relações de compatibilidade com o País de origem quando estas estiverem definidas.
+- **Descrição:** os dados estruturados da Obra usam domínios controlados, sem texto livre fora dos valores permitidos.
+  - **Valores nativos:** país de origem (Japão, Coreia do Sul, China, Taiwan), papéis de autoria (RN0023), demografias (Shonen, Shoujo, Seinen, Josei, Kodomo) e status da publicação original (Completa, Em andamento, Em hiato, Cancelada).
+  - **Valores ativos:** autores, editoras originais e pré-publicações (listas administrativas) e tipo de Obra e gêneros (valores fixos do sistema, RN0066). Na alteração, tipos de Obra e gêneros legados ou inativos já vinculados à Obra são preservados.
+  - **Compatibilidade com o país de origem:** o tipo de Obra precisa ser compatível com o país, conforme a tabela oficial: Mangá, Light Novel, Artbook e Databook para Japão; Manhwa para Coreia do Sul; Manhua para China e Taiwan; Novel para Japão, Coreia do Sul, China e Taiwan. Autores, editoras originais e pré-publicações com países relacionados precisam incluir o país da Obra. Os sem país relacionado são aceitos. A Web só oferece tipos e valores compatíveis com o país escolhido.
+
+  As recusas dependem do tipo de valor:
+  - **Referências por identificador** (tipo de Obra, autores, gêneros, editoras originais e pré-publicações) inexistentes, inativas ou incompatíveis com o país: "Um ou mais valores selecionados são inválidos."
+  - **Valores nativos inválidos** (país de origem, papel de autoria, demografia ou status da publicação original fora da lista): a mensagem genérica "Preencha os campos obrigatórios da Obra.", no cadastro e na alteração.
 
 #### RN0025 — Prevenção de duplicidade de Obras no catálogo
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0013, RF0014
-- **Descrição:** Durante o cadastro ou a alteração de uma Obra, o sistema deve impedir a existência de outra Obra com o mesmo título em português, desconsiderando diferenças entre letras maiúsculas e minúsculas e espaços externos. Caso encontre duplicidade, deve recusar a transação e retornar: "Uma Obra com esse mesmo título já foi cadastrada anteriormente!"
+- **Descrição:** não pode haver duas Obras com o mesmo título em português, desconsiderando maiúsculas, minúsculas e espaços externos. A duplicidade é recusada com: "Obra já cadastrada!". O título romanizado entra na busca pública, mas não na detecção de duplicidade. O slug é gerado a partir do título em português e recebe sufixo numérico (`-2`, `-3`...) em caso de colisão.
 
 #### RN0026 — Política de obrigatoriedade de dados de Obras em cadastros e alterações
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0013, RF0014
-- **Descrição:** No cadastro de Obras, são obrigatórios quando aplicáveis: Título em português Título original País de origem Tipo de Obra Capa interna importada por URL Ao menos um autor com ao menos um papel Status de publicação original Ano de início da publicação original Ao menos uma Editora Original Ao menos um Gênero Indicador de conteúdo adulto Em alteração parcial, a capa interna já associada deve ser preservada quando não houver substituta. Não é permitida a remoção da capa sem a associação bem-sucedida de outra capa interna válida. O Ano de fim e o Número de volumes originais deixam de ser exigidos quando o status for “Em andamento” ou “Em hiato”. Pré-publicação deixa de ser exigida quando a Obra for marcada como lançamento direto. Demografia deixa de ser exigida quando o Tipo de Obra for incompatível ou quando houver lançamento direto. A seleção do gênero Hentai deve ativar e bloquear o indicador de conteúdo adulto. Artbook e Databook devem ativar e bloquear a opção de lançamento direto. A ausência de qualquer dado obrigatório aplicável deve resultar em recusa da transação com: "Dados obrigatórios faltando!"
+- **Descrição:**
+  - **API:** exige título em português, título romanizado, sinopse, país de origem, tipo de Obra, status da publicação original, capa interna e ao menos um autor com ao menos um papel. Título original, anos, editoras originais, gêneros, demografias e pré-publicações são opcionais. Os anos ficam entre 1900 e 2200. A ausência de dado obrigatório é recusada com "Preencha os campos obrigatórios da Obra.". O ano de fim anterior ao de início é recusado com "O fim da publicação original não pode ser anterior ao início.".
+  - **Formulário da Web:** exige, por etapa, título em português, título romanizado, país e tipo; autores com papéis; ao menos uma editora original, status, ano de início, ano de fim (exceto “Em andamento” e “Em hiato”), ao menos um gênero, demografia (quando habilitada) e pré-publicação (exceto em lançamento direto); capa importada e sinopse. Ao avançar de etapa ou salvar, os campos ausentes são marcados como inválidos (os de texto e seleção com "Preencha o campo obrigatório.") e nada é enviado à API.
+  - **Regras derivadas no formulário:** status “Em andamento” ou “Em hiato” limpa e desabilita o ano de fim. Lançamento direto limpa e desabilita demografias e pré-publicações (a API aplica a mesma limpeza). Tipos Artbook e Databook ativam e bloqueiam o lançamento direto. Demografia só se aplica ao tipo Mangá. A regra de Hentai está em RN0067.
+  - **Capa:** na alteração, a capa já associada é preservada quando não há substituta. Não é possível remover a capa sem associar outra capa interna válida.
+  - **Título original:** é opcional. Divergência na implementação: ver seção 6.3.
 
 #### RN0027 — Atribuição compulsória da visibilidade privada a novas Obras
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0013
-- **Descrição:** Para toda nova Obra registrada, o sistema deve atribuir compulsoriamente o status de visibilidade “Privado”.
+- **Descrição:** toda nova Obra nasce com visibilidade “Privado”.
 
 #### RN0028 — Proteção da exclusão de Obras com visibilidade pública
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0015
-- **Descrição:** O sistema não deve permitir a exclusão de Obras com visibilidade “Público”. A tentativa deve ser recusada com: "Essa Obra está pública, não pode ser excluída!"
+- **Descrição:** Obra pública não pode ser excluída. A tentativa é recusada com: "Essa Obra está pública, não pode ser excluída!"
 
 #### RN0029 — Proteção da exclusão de Obras com Edições vinculadas
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0015
-- **Descrição:** Uma Obra somente pode ser excluída depois que todas as Edições vinculadas tiverem sido removidas. A relação entre Obra e Edição deve utilizar ON DELETE RESTRICT, impedindo fisicamente a exclusão do registro pai enquanto existirem dependências e evitando registros órfãos.
+- **Descrição:** a Obra só pode ser excluída depois de removidas todas as suas Edições. A tentativa é recusada com "Essa Obra possui Edições vinculadas, não pode ser excluída!". O banco também impede a exclusão do registro pai enquanto houver dependentes (restrição de chave estrangeira).
 
 #### RN0030 — Proteção de alteração para privado em Obras com Edições públicas
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0018
-- **Descrição:** O sistema deve bloquear a alteração de uma Obra de “Público” para “Privado” enquanto existir ao menos uma Edição pública vinculada. A tentativa deve ser recusada com: "Essa Obra possui Edições públicas, não pode ser rebaixada para privada!"
+- **Descrição:** a Obra não pode passar de “Público” a “Privado” enquanto houver Edição pública vinculada. A tentativa é recusada com: "Essa Obra possui Edições públicas, não pode ser rebaixada para privada!"
+
+#### RN0066 — Tipos de Obra e gêneros controlados pelo sistema
+
+- **Estado:** Vigente
+- **RFs dependentes:** RF0013, RF0014, RF0030, RF0031, RF0032, RF0033
+- **Descrição:** tipos de Obra e gêneros são valores fixos do sistema, criados pelas migrations, com identidade estável por código, e **não têm nenhuma gestão pelo Administrador**. Eles não aparecem em “Gerenciar opções” e só são usados como opções nos formulários e filtros.
+  - **Tipos de Obra, na ordem oficial:** Mangá, Manhwa, Manhua, Light Novel, Novel, Artbook e Databook.
+  - **Gêneros, na ordem oficial:** Aventura, Ação, Boys’ Love, Comédia, Drama, Ecchi, Esportes, Fantasia, Ficção Científica, Girls’ Love, Hentai, Mahou Shoujo, Mecha, Mistério, Música, Psicológico, Romance, Slice of Life, Sobrenatural, Suspense e Terror.
+
+  A API recusa tentativas diretas de alterar esses valores:
+  - criação: "Os valores dessa lista são controlados pelo sistema e não podem ser criados.";
+  - renomeação ou alteração de países: "Esse valor é controlado pelo sistema: só é possível ativá-lo ou desativá-lo.";
+  - exclusão: "Esse valor é controlado pelo sistema e não pode ser excluído."
+
+  Divergência na implementação: ver seção 6.3. Valores legados sem correspondência oficial não são apagados. Continuam vinculados às Obras que já os usam, mas não são oferecidos em novos cadastros. Valores inativos não aparecem nos formulários nem nos filtros do catálogo público.
+
+#### RN0067 — Conteúdo adulto obrigatório com o gênero Hentai
+
+- **Estado:** Vigente
+- **RFs dependentes:** RF0013, RF0014
+- **Descrição:** a regra tem duas camadas.
+  - **API:** enquanto a Obra tiver Hentai (ou gênero legado marcado como restrito a adultos) associado, a indicação de conteúdo adulto é gravada como ativada, mesmo que a requisição envie o valor desativado. Remover o Hentai não desativa a indicação. Depois da remoção, ela pode ser desativada explicitamente.
+  - **Formulário da Web:** selecionar Hentai marca e bloqueia a opção de conteúdo adulto. Retirar o Hentai desmarca a opção automaticamente.
+
+#### RN0068 — Compatibilidade entre papéis de autoria do mesmo autor
+
+- **Estado:** Vigente
+- **RFs dependentes:** RF0013, RF0014
+- **Descrição:** o mesmo autor não pode receber “História e Arte” junto com “História” ou “Arte”, nem “História” e “Arte” separadamente (nesse caso usa-se “História e Arte”). No formulário, marcar um desses papéis desabilita os incompatíveis. A API recusa a combinação, no cadastro e na alteração. Divergência na implementação (mensagem da recusa): ver seção 6.3.
+
+### 4.3. Edição e Volume
 
 #### RN0031 — Restrição de dados de Edições a domínios de referência
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0019, RF0020
-- **Descrição:** Os dados estruturados de Edições devem utilizar domínios controlados. Os seguintes campos devem utilizar valores administrativos cadastrados e ativos: Editora Brasileira Tipo de Edição Acabamento Formato O Número cronológico da Edição deve ser persistido como número inteiro positivo e apresentado em formato ordinal na interface. O Status de publicação no Brasil deve utilizar os valores nativos definidos pelo sistema.
+- **Descrição:** a editora brasileira é obrigatória e deve ser valor ativo da lista “Editoras brasileiras”. Acabamento, formato e miolos são opcionais. A Edição aceita até 50 miolos distintos, com a ordem de seleção preservada. Quando informados, devem ser valores ativos das listas “Tipos de capa”, “Formatos físicos” e “Miolos”. O número da edição é inteiro positivo, exibido em forma ordinal. O status de publicação no Brasil usa os valores nativos Completa, Em andamento, Em hiato e Cancelada. Referência inexistente ou inativa a editora brasileira, acabamento, formato ou miolo é recusada com: "Um ou mais valores selecionados são inválidos." Status nativo fora da lista ou número da edição que não seja inteiro positivo recebem a mensagem genérica da validação: "Preencha os campos obrigatórios da Edição." no cadastro e "Informe ao menos um campo válido para alterar." na alteração.
 
 #### RN0032 — Prevenção de duplicidade de Edições no catálogo
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0019, RF0020
-- **Descrição:** O sistema deve, durante qualquer tentativa de cadastro ou alteração de Edições, validar se a Edição não fere unicidade do catálogo, utilizando uma chave composta de Identificador Único da Obra matriz + Número Cronológico da Edição. Caso o sistema identifique uma Edição no banco de dados que tem esses mesmos dados idênticos, deve recusar a transação e retornar o erro: "Uma Edição com esse mesmo número cronológico já foi cadastrada anteriormente!"
+- **Descrição:** o número da edição é único dentro da Obra. A duplicidade no cadastro ou na alteração é recusada com: "Essa Obra já possui uma Edição com esse número cronológico!"
 
 #### RN0033 — Política de obrigatoriedade de dados de Edições em cadastros e alterações
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0019, RF0020
-- **Descrição:** Os seguintes dados são obrigatórios ao cadastrar uma Edição: Editora Brasileira Tipo de Edição Acabamento Formato Número cronológico da Edição Status de publicação no Brasil Capa interna importada por URL Em alteração parcial, a capa interna já associada deve ser preservada quando não houver substituta. Não é permitida a remoção da capa sem a associação bem-sucedida de outra capa interna válida. A ausência de qualquer dado obrigatório deve resultar em recusa da transação com: "Dados obrigatórios faltando!"
+- **Descrição:** no cadastro são obrigatórios o número da edição, a editora brasileira e o status de publicação no Brasil. A ausência é recusada com "Preencha os campos obrigatórios da Edição.". Acabamento, formato e miolo podem ser desconhecidos e permanecer não informados. A Edição não recebe capa (RN0069). Na alteração, é preciso enviar ao menos um campo válido.
+  - **Contrato da API:** no cadastro, as chaves `coverTypeId`, `formatId` e `paperIds` precisam estar presentes no corpo. Acabamento e formato usam `null` para “não informado”; miolos usam `[]`. `paperIds` aceita até 50 identificadores positivos distintos e não aceita `null`. Omiti-las gera a recusa "Preencha os campos obrigatórios da Edição.". A Web sempre envia as três chaves.
 
 #### RN0034 — Atribuição compulsória da visibilidade privada a novas Edições
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0019
-- **Descrição:** Para toda nova Edição registrada, o sistema deve atribuir compulsoriamente o status de visibilidade “Privado”.
+- **Descrição:** toda nova Edição nasce com visibilidade “Privado”.
 
 #### RN0035 — Proteção da exclusão de Edições com visibilidade pública
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0021
-- **Descrição:** O sistema não deve permitir a exclusão de Edições com visibilidade “Público”. A tentativa deve ser recusada com: "Essa Edição está pública, não pode ser excluída!"
+- **Descrição:** Edição pública não pode ser excluída. A tentativa é recusada com: "Essa Edição está pública, não pode ser excluída!"
 
 #### RN0036 — Proteção da exclusão de Edições com Volumes vinculados
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0021
-- **Descrição:** Uma Edição somente pode ser excluída depois que todos os Volumes vinculados tiverem sido removidos. A relação entre Edição e Volume deve utilizar ON DELETE RESTRICT, impedindo fisicamente a exclusão do registro pai enquanto existirem dependências e evitando registros órfãos.
+- **Descrição:** a Edição só pode ser excluída depois de removidos todos os seus Volumes. A tentativa é recusada com "Essa Edição possui Volumes vinculados, não pode ser excluída!". O banco também impede a exclusão enquanto houver dependentes.
 
 #### RN0037 — Proteção da publicação de Edições vinculadas a Obras privadas
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0024
-- **Descrição:** O sistema deve bloquear a alteração de uma Edição de “Privado” para “Público” quando sua Obra matriz estiver privada. A tentativa deve ser recusada com: "Essa Edição está vinculada a uma Obra privada, não pode ser publicada!"
+- **Descrição:** a Edição não pode ser publicada enquanto a Obra estiver privada. A tentativa é recusada com: "Essa Edição está vinculada a uma Obra privada, não pode ser publicada!"
 
 #### RN0038 — Prevenção de duplicidade de Volumes no catálogo
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0025, RF0026
-- **Descrição:** O sistema deve, durante qualquer tentativa de cadastro ou alteração de Volumes, validar se o Volume não fere unicidade do catálogo, utilizando uma chave composta de Identificador Único da Edição matriz + Número do Volume. Caso o sistema identifique um Volume no banco de dados que tem esses mesmos dados idênticos, deve recusar a transação e retornar o erro: "Um volume desta edição com esse mesmo número já foi cadastrado anteriormente!"
+- **Descrição:** o número do Volume é único dentro da Edição. A duplicidade é recusada com: "Um volume desta edição com esse mesmo número já foi cadastrado anteriormente!"
 
 #### RN0039 — Política de obrigatoriedade de dados de Volumes em cadastros e alterações
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0025, RF0026
-- **Descrição:** Os seguintes dados são obrigatórios ao cadastrar um Volume: Número do Volume, aceitando valores inteiros a partir de zero Capa interna importada por URL Precisão e valor da data de publicação Os seguintes dados são opcionais: Indicação de Volume Único Número de páginas Moeda e preço de capa ISBN-10 ISBN-13 Link afiliado Sinopse do Volume Em alteração parcial, a capa interna já associada deve ser preservada quando não houver substituta. Não é permitida a remoção da capa sem a associação bem-sucedida de outra capa interna válida. A data deve aceitar precisão completa, mês e ano ou apenas ano. A ausência de qualquer dado obrigatório deve resultar em recusa da transação com: "Dados obrigatórios faltando!"
+- **Descrição:**
+  - **Obrigatórios:** número do Volume (inteiro a partir de 0), capa interna e data de lançamento com precisão.
+  - **Precisão da data:** “Completa” (padrão), “Mês e ano” ou “Ano”. O ano, entre 1900 e 2200, é sempre exigido. O mês é exigido nas precisões Completa e Mês e ano. O dia é exigido na precisão Completa e a data precisa existir no calendário.
+  - **Opcionais:** indicação de volume único, número de páginas (positivo), moeda (R$, CR$, Cr$, NCz$ ou Cz$, com R$ por padrão), preço de capa (não negativo), ISBN-10 e ISBN-13 (com dígito verificador válido), link de afiliado (URL válida) e sinopse.
+  - **ISBN inválido:** a API recusa o ISBN-10 ou o ISBN-13 com dígito verificador inválido. Divergência na implementação: ver seção 6.3.
+  - **Alteração:** a data resultante é revalidada. Reduzir a precisão remove os componentes que deixam de existir. Data inválida é recusada com "Informe uma data de lançamento válida para o Volume.". A capa associada é preservada quando não há substituta.
+
+  A ausência de dado obrigatório no cadastro é recusada com "Preencha os campos obrigatórios do Volume."
 
 #### RN0040 — Atribuição compulsória da visibilidade da Edição matriz a Volumes
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0024, RF0025
-- **Descrição:** Todo Volume deve refletir a visibilidade de sua Edição matriz. No cadastro, o Volume deve herdar o status vigente da Edição; quando a visibilidade da Edição for alterada, todos os Volumes vinculados devem ser atualizados na mesma transação.
+- **Descrição:** o Volume reflete a visibilidade da sua Edição. No cadastro, herda o status vigente da Edição. Quando a visibilidade da Edição muda, todos os Volumes vinculados são atualizados na mesma transação. Não há alteração de visibilidade por Volume.
 
 #### RN0041 — Proteção da exclusão de Volumes com visibilidade pública
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0027
-- **Descrição:** O sistema não deve permitir a exclusão de Volumes com visibilidade “Público”. A tentativa deve ser recusada com: "Esse Volume está público, não pode ser excluído!"
+- **Descrição:** Volume público não pode ser excluído. A mensagem especificada é "Esse Volume está público, não pode ser excluído!". Divergência na implementação: ver seção 6.3.
 
 #### RN0042 — Proteção contra tornar privada uma Edição com Volumes vinculados a usuários
 
+- **Estado:** Futuro (planejado)
 - **RFs dependentes:** RF0024
-- **Descrição:** O sistema não deve permitir que uma Edição pública seja alterada para “Privado” quando qualquer Volume vinculado possuir registros em Estantes Digitais ou Listas de Desejos. A tentativa deve ser recusada com: "Essa Edição tem Volumes vinculados a usuários, não pode ser tornada privada!"
+- **Descrição:** a Edição pública não poderá passar a “Privado” quando algum Volume dela estiver em Estantes Digitais ou Listas de Desejos. A tentativa deverá ser recusada com: "Essa Edição tem Volumes vinculados a usuários, não pode ser tornada privada!" A regra depende da Estante Digital e da Lista de Desejos. O código tem apenas um ponto de extensão, sem efeito.
+
+#### RN0069 — Capa derivada da Edição e publicação condicionada ao Volume 1
+
+- **Estado:** Vigente
+- **RFs dependentes:** RF0019, RF0022, RF0024, RF0026, RF0037, RF0039, RF0040
+- **Descrição:** a Edição não tem capa própria. A capa exibida é a do Volume de número 1 da mesma Edição (no catálogo público, somente se esse Volume for público). Não se usa o Volume 0, o Volume 2 nem Volumes de outra Edição. Sem Volume 1, a Edição aparece sem capa. A publicação da Edição exige Volume 1 com capa interna e é recusada, sem alterar a hierarquia, com "Essa Edição não possui o Volume 1 com capa interna válida, não pode ser publicada!". Em Edição pública, o Volume 1 não pode ser renumerado: a tentativa é recusada com "Esse é o Volume 1 de uma Edição pública: renumerá-lo deixaria a Edição sem capa!".
+
+### 4.4. Listas administrativas e contas
 
 #### RN0043 — Prevenção de duplicidade de valores em listas de valores pré-cadastrados
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0030, RF0031
-- **Descrição:** Durante o cadastro ou a alteração de valores administrativos, o sistema deve garantir a unicidade do texto dentro da mesma categoria, desconsiderando diferenças entre maiúsculas e minúsculas e espaços externos. Em operações em lote, a existência de qualquer valor inválido ou duplicado deve rejeitar toda a operação. A tentativa deve retornar: "Essa lista já tem esse valor cadastrado!"
+- **Descrição:** o texto de um valor é único dentro da categoria, desconsiderando maiúsculas, minúsculas e espaços externos. Na inclusão em lote, qualquer valor inválido ou duplicado rejeita toda a operação. As mensagens são:
+  - valor já existente na lista: "Essa lista já tem esse valor cadastrado: {valor}." (ou "Essa lista já tem esses valores cadastrados: {valores}.");
+  - repetição dentro do mesmo pedido: "Valores repetidos na solicitação: {valores}.";
+  - renomeação para texto existente: "Essa lista já tem esse valor cadastrado!".
+
+  Texto em branco e país ausente são recusados assim:
+  - inclusão com texto em branco: a Web recusa antes de consultar a API, com "Informe o texto do novo valor." no campo. A API recusa com "Categoria e texto do valor são obrigatórios.";
+  - inclusão só com separadores, como ", ,": "Informe ao menos um valor válido." (na Web e na API);
+  - renomeação com texto em branco: a Web recusa com "Informe o texto do novo valor.". A API recusa com "Texto do novo valor é obrigatório.";
+  - país relacionado ausente, onde exigido: "Selecione ao menos um país de origem relacionado.".
 
 #### RN0044 — Proteção contra exclusão de valor administrativo em uso
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0032
-- **Descrição:** O sistema não deve permitir a exclusão de um valor administrativo enquanto ele estiver vinculado a uma Obra, Edição ou Volume. A tentativa deve ser recusada com: "Esse valor está vinculado a um mangá, não pode ser excluído!"
+- **Descrição:** valor vinculado a Obra ou Edição não pode ser excluído. A tentativa é recusada com: "Esse valor está vinculado a um mangá, não pode ser excluído!". Valores controlados pelo sistema nunca são excluídos (RN0066).
 
 #### RN0045 — Política de prevenção de automodificação de privilégios
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0035
-- **Descrição:** Um Administrador não pode alterar o nível de acesso da própria conta. A promoção ou o rebaixamento dessa conta deve ser realizado por outro Administrador. A tentativa deve ser recusada com: "Você não pode alterar o nível de acesso de sua própria conta!"
+- **Descrição:** o Administrador não pode conceder nem remover o perfil Administrador da própria conta. Isso deve ser feito por outro Administrador. A tentativa é recusada com: "Você não pode alterar o nível de acesso de sua própria conta!". A Web desabilita a alteração na linha da própria conta.
+
+### 4.5. Catálogo público
 
 #### RN0046 — Restrição compulsória de visibilidade pública
 
-- **RFs dependentes:** RF0036, RF0037, RF0038, RF0039, RF0040, RF0041, RF0042
-- **Descrição:** Vitrines, buscas, calendários, listagens vinculadas e páginas públicas de detalhe devem omitir qualquer Obra, Edição ou Volume com visibilidade “Privado”. A regra também deve valer para acesso direto por identificador ou URL, sem expor os dados do registro privado.
+- **Estado:** Vigente
+- **RFs dependentes:** RF0036, RF0037, RF0038, RF0039, RF0040, RF0041, RF0042, RF0051
+- **Descrição:** vitrines, buscas, página do Autor, listagens vinculadas e páginas de detalhe omitem qualquer Obra, Edição ou Volume privado. Um registro só aparece se toda a hierarquia acima dele for pública. Em acesso direto por URL, o sistema responde como não encontrado ("Obra não encontrada.", "Edição não encontrada." ou "Volume não encontrado."), sem indicar qual nível está restrito.
 
 #### RN0047 — Interseção estrita de filtros de classificação
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0036, RF0037
-- **Descrição:** Quando múltiplos filtros forem aplicados simultaneamente, o sistema deve utilizar interseção lógica. Se houver múltiplos valores dentro de uma classificação combinável, o resultado deve conter apenas registros que atendam a todos os critérios informados.
+- **Descrição:** filtros simultâneos são combinados por interseção. Nos filtros de múltipla escolha (gêneros e demografias), o resultado contém apenas Obras que atendem a todos os valores selecionados.
 
 #### RN0048 — Controle de acesso e omissão condicional de conteúdo adulto
 
-- **RFs dependentes:** RF0001, RF0011, RF0036, RF0037, RF0038, RF0039, RF0040, RF0041, RF0042
-- **Descrição:** A data de nascimento é dado privado da conta e não deve ser exposta no catálogo público. Toda nova conta deve iniciar com a preferência de exibição de conteúdo adulto desativada. O backend somente pode ativar essa preferência quando a data de nascimento for válida, não futura e o cálculo na data da solicitação indicar 18 anos completos. Visitantes, usuários com a preferência desativada e usuários que não atendam à maioridade devem receber conteúdo adulto omitido das áreas públicas, inclusive em acesso direto por URL. Na área administrativa, administradores com sessão válida e papel autorizado podem consultar todo o catálogo, independentemente da idade e da preferência. Essa exceção não permite ativar a preferência pública para menores nem dispensa a validação de permissões administrativas. O sistema não deve persistir uma flag independente de maioridade; a idade deve ser calculada quando necessária.
+- **Estado:** Vigente
+- **RFs dependentes:** RF0001, RF0011, RF0036, RF0037, RF0038, RF0039, RF0040, RF0041, RF0042, RF0051
+- **Descrição:** a data de nascimento é dado privado e não aparece no catálogo. A idade é calculada quando necessária, sem gravar uma indicação de maioridade. A preferência de conteúdo adulto nasce desativada e só pode ser ativada com 18 anos completos, caso contrário a recusa é "Conteúdo +18 exige data de nascimento informada e 18 anos completos.". No catálogo público:
+  - **Visitante:** não vê conteúdo adulto.
+  - **Menor de 18 anos:** não vê conteúdo adulto, mesmo com preferência gravada.
+  - **Conta sem o perfil Administrador:** vê conteúdo adulto somente se for maior de idade **e** tiver a preferência habilitada.
+  - **Conta Ativada, com sessão válida e o perfil Administrador concedido:** lê conteúdo adulto independentemente de idade, preferência e perfil ativo. A exceção é só de leitura e deixa de valer quando o perfil Administrador é removido. Como a Web bloqueia as páginas públicas com o perfil Administrador ativo (RN0065), na prática a exceção vale quando essa conta navega com Usuário Padrão ativo.
+
+  Sem autorização, a Obra é omitida tanto pela indicação adulta quanto pela associação ao gênero Hentai (ou gênero legado restrito), inclusive em acesso direto por URL, e o gênero restrito não é oferecido nos filtros. Na área administrativa, o Administrador ativo consulta todo o catálogo, sem filtro adulto. Essa exceção não permite ativar a preferência para menores.
 
 #### RN0049 — Preservação de contexto entre vitrines
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0036, RF0037
-- **Descrição:** Ao alternar entre as vitrines de Obras e Edições, o sistema deve preservar os termos fundamentais de busca compatíveis, especialmente Título e Autor, evitando que o usuário precise informá-los novamente.
+- **Descrição:** ao alternar entre as abas de Obras e Edições, o termo de busca e a ordenação compatível são preservados, sem que a pessoa precise informá-los novamente.
 
 #### RN0050 — Enriquecimento condicional por autenticação
 
+- **Estado:** Futuro (planejado)
 - **RFs dependentes:** RF0038, RF0039, RF0040, RF0041
-- **Descrição:** Respostas públicas de detalhes podem incluir dados personalizados de posse e intenção de compra somente quando houver sessão autenticada válida. Para visitantes anônimos, esses campos devem ser omitidos sem interromper a navegação nem produzir erro de autenticação.
+- **Descrição:** respostas públicas de detalhe poderão incluir dados pessoais de posse e intenção de compra somente com sessão válida. Para visitantes, esses campos serão omitidos sem interromper a navegação. A regra depende da Estante Digital e da Lista de Desejos.
 
 #### RN0051 — Cálculo derivado do total de Volumes da Edição
 
-- **RFs dependentes:** RF0037, RF0039, RF0040
-- **Descrição:** O total de Volumes de uma Edição deve ser calculado a partir da quantidade de Volumes efetivamente vinculados no banco de dados. O sistema não deve manter um total manual independente que possa divergir da relação real.
+- **Estado:** Vigente
+- **RFs dependentes:** RF0022, RF0037, RF0039, RF0040
+- **Descrição:** o total de Volumes é sempre calculado a partir dos Volumes efetivamente vinculados, sem campo manual. Na área administrativa, conta todos os Volumes da Edição. No catálogo público, conta somente os Volumes públicos.
+
+#### RN0070 — Navegação entre Volumes públicos da mesma Edição
+
+- **Estado:** Vigente
+- **RFs dependentes:** RF0041
+- **Descrição:** o detalhe público de um Volume informa o Volume anterior e o seguinte da mesma Edição, na ordem crescente de número, considerando somente Volumes públicos. Volumes privados nunca aparecem como destino. Na Web, os botões de navegação ficam abaixo da capa e aparecem apenas quando existe destino válido. O botão do anterior fica à esquerda e o do seguinte à direita, cada um com o rótulo do Volume de destino (“Volume 2”, “Volume único”). Em Edição com um único Volume público, nenhum botão é exibido.
+
+#### RN0071 — URLs públicas contextualizadas
+
+- **Estado:** Vigente
+- **RFs dependentes:** RF0038, RF0040, RF0041
+- **Descrição:** as URLs públicas seguem a hierarquia Obra → Edição → Volume: `/obras/{slug}`, `/obras/{slug}/edicao/{editionId}` e `/obras/{slug}/edicao/{editionId}/volume/{volumeId}`. Links e retornos são gerados nesse formato. Se o slug ou a Edição da URL não corresponderem ao registro, a página responde como não encontrada ("Edição não encontrada." ou "Volume não encontrado."), assim como para identificadores não numéricos. Rotas isoladas como `/edicoes/{id}` e `/volumes/{id}` não existem e caem na página de rota não encontrada, sem redirecionamento.
+
+#### RN0072 — Exibição de metadados editoriais ausentes
+
+- **Estado:** Vigente
+- **RFs dependentes:** RF0038, RF0039, RF0040, RF0041
+- **Descrição:** metadados opcionais não informados, como título original, acabamento, formato, miolo, páginas, preço, datas, ISBN, sinopse e link de afiliado, não são preenchidos com valores inventados: o item é omitido. Os miolos são exibidos na ficha da Edição, em lista; a ficha do Volume não apresenta esse campo. Capa ausente ou que falha ao carregar é substituída pelo estado “Sem capa”. Divergência na implementação (períodos de publicação e capa da Edição): ver seção 6.3.
 
 #### RN0052 — Resolução temporal padrão do calendário
 
+- **Estado:** Futuro (planejado)
 - **RFs dependentes:** RF0042
-- **Descrição:** Quando a consulta ao calendário não informar mês e ano, o sistema deve utilizar o mês e o ano vigentes no servidor. Volumes cuja data possua precisão apenas anual não devem ser atribuídos arbitrariamente a um mês específico.
+- **Descrição:** sem mês e ano informados, o calendário deverá usar o mês e o ano vigentes. Volumes com precisão apenas anual não deverão ser atribuídos a um mês específico.
+
+### 4.6. Acervo pessoal (futuro)
 
 #### RN0053 — Autenticação obrigatória para acervo pessoal
 
+- **Estado:** Futuro (planejado)
 - **RFs dependentes:** RF0043, RF0044, RF0045, RF0046, RF0047, RF0048, RF0049
-- **Descrição:** Operações de Estante Digital e Lista de Desejos exigem sessão stateful válida. Visitantes podem navegar pelo catálogo público, mas não podem criar, remover, sincronizar ou consultar vínculos de acervo pessoal.
+- **Descrição:** as operações de Estante Digital e Lista de Desejos exigirão sessão válida. Visitantes navegam pelo catálogo, mas não criam, removem, sincronizam nem consultam acervo pessoal.
 
 #### RN0054 — Exclusão mútua entre Estante Digital e Lista de Desejos
 
+- **Estado:** Futuro (planejado)
 - **RFs dependentes:** RF0043, RF0045
-- **Descrição:** Quando um Volume for adicionado com sucesso à Estante Digital, o sistema deve remover esse mesmo Volume da Lista de Desejos do usuário, caso exista, impedindo a coexistência de posse e intenção de compra.
+- **Descrição:** ao adicionar um Volume à Estante Digital, o sistema deverá removê-lo da Lista de Desejos do usuário, se existir.
 
 #### RN0055 — Unicidade e estado de leitura do vínculo de posse por usuário e Volume
 
+- **Estado:** Futuro (planejado)
 - **RFs dependentes:** RF0043, RF0044, RF0045, RF0046, RF0047, RF0048, RF0049
-- **Descrição:** Um usuário não pode possuir vínculos duplicados com o mesmo Volume na Estante Digital nem na Lista de Desejos. O vínculo de posse na Estante deve armazenar o estado de leitura “lido” ou “não lido”, iniciado como “não lido”, e esse estado só pode ser alterado enquanto o vínculo existir. Ao remover a posse, o estado de leitura deve ser removido junto. A Lista de Desejos não possui estado de leitura. A camada de persistência deve garantir a unicidade por usuário e Volume em cada relação.
+- **Descrição:** não haverá vínculos duplicados entre o mesmo usuário e o mesmo Volume na Estante ou na Lista de Desejos. O vínculo de posse guardará o estado “lido” ou “não lido”, iniciado como “não lido” e removido junto com a posse. A Lista de Desejos não terá estado de leitura.
 
 #### RN0056 — Restrição do acervo pessoal a registros públicos
 
+- **Estado:** Futuro (planejado)
 - **RFs dependentes:** RF0043, RF0045, RF0046, RF0047, RF0049
-- **Descrição:** Volumes privados ou vinculados a Edições ou Obras privadas não podem ser adicionados à Estante Digital nem à Lista de Desejos. Vínculos já existentes devem ser omitidos das consultas pessoais enquanto qualquer nível da hierarquia estiver privado, sem serem apagados automaticamente.
+- **Descrição:** Volumes privados, ou de Edição ou Obra privada, não poderão ser adicionados. Vínculos existentes serão omitidos das consultas enquanto algum nível estiver privado, sem serem apagados.
 
 #### RN0057 — Prevenção de conflito por posse ativa
 
+- **Estado:** Futuro (planejado)
 - **RFs dependentes:** RF0047
-- **Descrição:** O sistema deve recusar a adição de um Volume à Lista de Desejos quando o usuário já possuir esse Volume na Estante Digital. A operação deve ser abortada com HTTP 409 e mensagem informando o conflito de posse ativa.
+- **Descrição:** a adição à Lista de Desejos de um Volume já presente na Estante Digital deverá ser recusada, informando o conflito de posse.
+
+### 4.7. Capas e mídia
 
 #### RN0058 — Origem transitória da capa
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0050
-- **Descrição:** A URL informada pelo Administrador deve servir somente como origem da importação. Ela não pode ser persistida nem apresentada como referência de exibição da capa. Sua retenção em campo separado é permitida apenas como dado restrito de procedência e auditoria.
+- **Descrição:** a URL informada serve apenas como origem da importação. Ela é guardada somente como procedência restrita da capa interna e nunca é usada ou exibida como endereço da capa.
 
 #### RN0059 — Autorização e segurança da importação de capa
 
+- **Estado:** Vigente
 - **RFs dependentes:** RF0050
-- **Descrição:** Somente Administradores autenticados podem importar ou substituir capas. A importação deve aceitar somente HTTPS e rejeitar destinos privados, reservados ou locais, redirecionamentos proibidos, conteúdo que não seja imagem e arquivos que excedam os limites de tempo, tamanho, dimensões ou quantidade de pixels definidos pelo sistema. Uma falha de importação não pode criar uma associação incompleta nem remover a capa interna previamente associada.
+- **Descrição:** somente o Administrador ativo importa ou descarta capas. A importação aceita apenas URL HTTPS de até 2048 caracteres, sem credenciais, cujo endereço resolva para destino público. `localhost`, redes privadas, reservadas ou locais e redirecionamentos para esses destinos são recusados, com no máximo 3 redirecionamentos. Aceita somente imagens AVIF, JPEG, PNG ou WebP, dentro dos limites configurados de tamanho (10 MB por padrão), quantidade de pixels e tempo de download (10 s por padrão). URL inválida é recusada com "Informe uma URL HTTPS pública válida para a capa." e imagem acima do tamanho, com "A imagem excede o tamanho máximo permitido.". Uma falha não cria associação nem remove a capa já associada.
 
 #### RN0060 — Atomicidade da substituição de capa
 
-- **RFs dependentes:** RF0050
-- **Descrição:** Uma nova capa somente pode substituir a atual depois que download, validação, processamento, armazenamento e associação forem concluídos. Qualquer falha deve preservar a capa anterior e permitir a limpeza segura de objetos temporários ou órfãos.
+- **Estado:** Vigente
+- **RFs dependentes:** RF0014, RF0026, RF0050
+- **Descrição:** a nova capa só substitui a atual depois de concluídos download, validação, processamento, armazenamento e associação. Qualquer falha preserva a capa anterior. Capas pendentes ou que ficaram sem uso são descartadas com segurança, inclusive pelo comando de limpeza de mídia. Uma capa já associada não pode ser descartada ("A capa já está associada a um registro.") nem associada a outro registro ("A capa interna informada é inválida ou já está em uso.").
 
 #### RN0061 — Entrega interna e fallback de capas
 
-- **RFs dependentes:** RF0016, RF0022, RF0028, RF0038, RF0039, RF0040, RF0041, RF0042, RF0050
-- **Descrição:** Somente recursos armazenados na infraestrutura de mídia configurada pelo CoMangá podem ser retornados como capa. A URL pública deve ser derivada da chave interna e da configuração vigente. Obra, Edição e Volume não podem ser cadastrados nem permanecer associados sem uma capa interna válida. O fallback padrão é permitido exclusivamente quando um recurso interno já associado estiver temporariamente indisponível; ele não autoriza registro sem capa nem permite recorrer à URL externa de procedência.
+- **Estado:** Vigente
+- **RFs dependentes:** RF0016, RF0022, RF0028, RF0038, RF0039, RF0040, RF0041, RF0050
+- **Descrição:** somente recursos armazenados na infraestrutura de mídia do CoMangá (Cloudflare R2) são retornados como capa. A URL pública é derivada da chave interna e da base pública configurada. Obra e Volume não podem ser cadastrados nem permanecer sem capa interna válida. A Edição usa a capa derivada (RN0069). O estado “Sem capa” da Web cobre apenas recurso ausente ou indisponível e não autoriza registro sem capa nem o uso da URL de procedência. Divergência na implementação (rótulo da capa da Edição): ver seção 6.3.
 
-## 5. Requisitos Não Funcionais:
+## 5. Requisitos Não Funcionais
 
-### 5.1 Categoria: Desempenho
+### 5.1. Categoria: Desempenho
 
 #### RNF01 — Desempenho de tempo de resposta do motor de busca de Obras e Edições
 
 - **Categoria:** Desempenho
 - **Prioridade:** Essencial
-- **Descrição:** O sistema deve garantir alto desempenho e fluidez nas operações de leitura voltadas ao usuário final. O motor de busca de Obras e Edições deve processar a requisição e retornar os resultados paginados com um tempo de resposta máximo de 500 milissegundos (ms). Para fins de aferição de qualidade, esta métrica aplica-se ao percentil 95 (P95) do volume total de requisições, estabelecendo que 95% das buscas devem ser concluídas dentro deste limite de 500ms sob carga normal de operação. O escopo desta métrica de latência contabiliza o tempo de processamento interno do servidor (execução da query no banco de dados e serialização no Back-end) operando sob a premissa de uma conexão de rede cliente-servidor estável, com latência máxima de até 100ms. O sistema fica isento do descumprimento desta métrica caso os atrasos sejam comprovadamente decorrentes de oscilações, gargalos ou degradação na infraestrutura de internet do usuário final (ISP).
+- **Estado:** Vigente
+- **Descrição:** a busca de Obras e Edições deve retornar resultados paginados com P95 de até 500 ms sob carga normal, com conexão cliente-servidor estável de até 100 ms de latência. Atrasos causados pela rede do usuário final não contam. **Verificação:** `npm run load:test` na API, com critério “RNF01: P95 ≤ 500 ms” por estágio. O teste mede a latência ponta a ponta no cliente de teste, do envio da requisição ao recebimento completo da resposta. A medida inclui a rede entre o cliente de teste e a API e não isola o tempo de processamento no servidor. O resultado depende do ambiente e não é garantia permanente.
 
 #### RNF02 — Capacidade de vazão e concorrência da API Pública
 
 - **Categoria:** Desempenho
 - **Prioridade:** Essencial
-- **Descrição:** O sistema deve suportar picos de tráfego garantindo uma vazão de processamento de até 20 requisições por segundo (RPS) simultâneas nas rotas de consulta pública (Vitrine). Sob este teto de carga de estresse, o sistema deve manter uma taxa de falhas (erros HTTP 5xx) inferior a 1%.
+- **Estado:** Vigente
+- **Descrição:** as rotas de consulta pública devem sustentar ao menos 20 requisições por segundo, com menos de 1% de respostas HTTP 5xx. **Verificação:** `npm run load:test`, com critério “RNF02: RPS ≥ 20 e 5xx < 1%”.
 
 #### RNF03 — Eficiência de tráfego e limite de paginação
 
 - **Categoria:** Desempenho
 - **Prioridade:** Essencial
-- **Descrição:** O sistema deve otimizar o consumo de memória do servidor e a banda de rede do cliente impondo paginação compulsória em todas as operações de listagem de coleções (como o catálogo de Obras). O Payload de resposta (JSON) do Back-end não deve ultrapassar 2 Megabytes (MB) de tamanho absoluto por requisição. Para garantir este limite, a quantidade máxima de registros retornados por página fica estritamente limitada a 50 itens.
+- **Estado:** Vigente
+- **Descrição:** todas as listagens são paginadas, com no máximo 50 itens por página. Divergência na implementação: ver seção 6.3. Cada resposta deve ter no máximo 2 MB. **Verificação:** `npm run load:test` na API, com critério “RNF03: resposta ≤ 2 MB e endpoint paginado em até 50 itens”, avaliado na rota informada ao teste.
 
 #### RNF04 — Desempenho de entrega de mídia estática (Capas)
 
 - **Categoria:** Desempenho
 - **Prioridade:** Essencial
-- **Descrição:** O sistema deve persistir no PostgreSQL somente chaves internas e metadados das capas, nunca conteúdo binário ou base64. Os arquivos devem permanecer em armazenamento de objetos controlado pelo CoMangá e ser entregues por HTTPS mediante URLs derivadas da configuração interna. A interface deve usar dimensões estáveis, carregamento eficiente e fallback para recursos ausentes ou indisponíveis.
+- **Estado:** Vigente
+- **Descrição:** o PostgreSQL guarda somente chaves e metadados das capas, nunca conteúdo binário ou base64. As imagens ficam no Cloudflare R2, processadas em variantes WebP 2:3 (1200×1800, 640×960 e 320×480), e são entregues por HTTPS a partir da base pública configurada. A interface usa dimensões estáveis, carregamento preguiçoso fora da área inicial e fallback para recurso ausente. Meta de projeto: TTFB P90 de até 300 ms na entrega das capas. Não há ferramenta no projeto que meça esse valor.
 
 ### 5.2. Categoria: Segurança
 
@@ -771,25 +1098,43 @@ Visão do Produto: O CoMangá é uma aplicação web independente, projetada par
 
 - **Categoria:** Segurança
 - **Prioridade:** Essencial
-- **Descrição:** O sistema deve garantir a confidencialidade absoluta das credenciais de autenticação dos usuários. É estritamente proibida a persistência de senhas em texto plano (plain text) ou a utilização de qualquer método de criptografia reversível no banco de dados relacional. Todas as senhas de acesso devem obrigatoriamente ser processadas por um algoritmo de hash criptográfico unidirecional com geração de salt dinâmico antes da gravação. Para eliminar ambiguidades e prevenir o uso de padrões obsoletos ou vulneráveis a ataques de força bruta (como MD5 ou SHA-1), a equipe de desenvolvimento deve adotar exclusivamente o algoritmo Bcrypt com um fator de trabalho (Salt Rounds) mínimo de 10.
+- **Estado:** Vigente
+- **Descrição:** senhas nunca são armazenadas em texto puro nem com criptografia reversível. São processadas com bcrypt, com fator de custo 10 e salt por senha. Por limitação do algoritmo, a senha é limitada a 72 bytes em UTF-8 (RN0002).
 
 #### RNF06 — Gerenciamento de sessão stateful e transporte seguro
 
 - **Categoria:** Segurança
 - **Prioridade:** Essencial
-- **Descrição:** O sistema deve operar com sessões stateful persistidas e validadas no servidor, permitindo revogação imediata no logout, na exclusão da conta e em outras operações sensíveis. O cliente deve receber apenas um identificador opaco por cookie HttpOnly; o servidor deve persistir somente o hash desse identificador. Em produção, o cookie deve utilizar Secure e uma política SameSite compatível com a topologia de implantação. Quando frontend e backend estiverem em origens distintas, a configuração deve permitir credenciais entre origens autorizadas sem ampliar indevidamente o CORS. A API deve aceitar credenciais apenas das origens explicitamente autorizadas e nunca deve transportar a sessão por localStorage ou cabeçalho Authorization.
+- **Estado:** Vigente
+- **Descrição:** as sessões são guardadas e validadas no servidor, com revogação imediata no logout, na troca ou redefinição de senha e na exclusão da conta. O navegador recebe apenas um identificador opaco em cookie HttpOnly. O servidor guarda somente o resumo criptográfico. Em produção, o cookie é Secure. O SameSite é Strict por padrão e configurável conforme a topologia de implantação. A API aceita credenciais apenas das origens listadas na configuração de CORS e nunca transporta a sessão por localStorage ou cabeçalho Authorization.
 
-#### RNF07 — Controle de Acesso Baseado em Funções (RBAC) via Middleware
+#### RNF07 — Controle de acesso por perfil ativo via middleware
 
 - **Categoria:** Segurança
 - **Prioridade:** Essencial
-- **Descrição:** O sistema deve garantir que o acesso aos recursos e rotas administrativas seja estritamente limitado aos usuários com os privilégios adequados. A validação de autorização (RBAC) deve ocorrer obrigatoriamente na camada de interceptação (Middleware) da API, configurando um mecanismo de defesa preemptiva (Fail-Fast). O Middleware deve ler a role (função/papel) do usuário vinculada à sessão ativa recuperada do armazenamento Stateful. Caso o usuário autenticado não possua o nível de permissão exigido para a operação, o sistema deve abortar a requisição e retornar o código de erro HTTP 403 (Forbidden) instantaneamente, bloqueando o fluxo de execução antes que qualquer regra de negócio ou transação de banco de dados seja acionada.
+- **Estado:** Vigente
+- **Descrição:** o acesso às rotas administrativas é validado na camada de middleware da API, antes de qualquer regra de negócio ou transação. O middleware lê a sessão, os perfis concedidos e o perfil ativo, e só autoriza quando o perfil ativo é Administrador e continua concedido à conta. Caso contrário, responde HTTP 403 imediatamente (RN0064). A proteção de rotas da Web é complementar e não substitui a validação da API.
+
+#### RNF17 — Expiração de sessão
+
+- **Categoria:** Segurança
+- **Prioridade:** Importante
+- **Estado:** Futuro (planejado)
+- **Descrição:** a sessão deverá expirar no servidor após um período definido, por tempo de vida ou por inatividade, além da revogação já existente (RN0014). Hoje não há validade por tempo nem `Max-Age` no cookie: a sessão vale até logout ou revogação. Os prazos serão definidos na implementação.
 
 #### RNF08 — Limitação de Taxa de Autenticação (Rate Limiting)
 
 - **Categoria:** Segurança
 - **Prioridade:** Essencial
-- **Descrição:** O sistema deve proteger os pontos de entrada de credenciais (rotas de Login) contra ataques automatizados de força bruta e Credential Stuffing. Para isso, a API deve implementar um mecanismo estrito de Rate Limiting baseado na identificação do endereço IP de origem do cliente. O sistema deve permitir um limite máximo de 5 (cinco) tentativas de autenticação falhas consecutivas dentro de uma janela de tempo deslizante de 5 minutos. Ao atingir ou exceder este limiar, o Middleware de segurança deve interceptar e bloquear imediatamente quaisquer novas requisições de login oriundas daquele IP, abortando o processamento sem consultar o banco de dados e retornando obrigatoriamente o código de erro HTTP 429 (Too Many Requests). A restrição só deve ser levantada após a expiração natural da janela de penalidade.
+- **Estado:** Vigente
+- **Descrição:** a API limita tentativas nos pontos de entrada de credenciais:
+  - **Login:** após 5 falhas do mesmo IP numa janela de 5 minutos contada a partir da primeira falha, novas tentativas desse IP são bloqueadas antes de consultar o banco, com HTTP 429 e "Muitas tentativas de login. Tente novamente em alguns minutos.". Um login bem-sucedido zera a contagem. Divergência na implementação: ver seção 6.3.
+  - **Solicitação e redefinição de senha por e-mail:** cada rota aceita até 5 pedidos por IP a cada 15 minutos. O excedente recebe HTTP 429, cabeçalho `Retry-After: 900` e "Muitas solicitações. Tente novamente em alguns minutos.".
+  - **Alteração de senha autenticada:** após 5 falhas da mesma conta em 5 minutos, a alteração é bloqueada com "Muitas tentativas com a senha atual. Tente novamente em alguns minutos.". A contagem é por conta e não zera com a troca de IP.
+
+  - **Cadastro e reenvio de ativação:** não têm limitação de taxa.
+
+  Os contadores ficam em memória de cada instância da API: são zerados ao reiniciar o processo e não são compartilhados entre instâncias.
 
 ### 5.3. Categoria: Confiabilidade
 
@@ -797,25 +1142,29 @@ Visão do Produto: O CoMangá é uma aplicação web independente, projetada par
 
 - **Categoria:** Confiabilidade
 - **Prioridade:** Essencial
-- **Descrição:** O sistema deve assegurar a integridade e a consistência absoluta dos dados em todas as operações de escrita que envolvam múltiplas entidades ou tabelas relacionadas (como a criação de uma Obra vinculada a suas Edições e Autores). Toda persistência multi-entidade deve ser executada obrigatoriamente sob o modelo de transação ACID (Atomicidade, Consistência, Isolamento e Durabilidade), garantindo que a operação seja tratada como uma unidade lógica atômica. Caso ocorra qualquer falha técnica ou violação de regra de integridade em qualquer etapa do processamento, o sistema deve realizar um Rollback total e automático, revertendo todas as alterações parciais e impedindo a persistência de registros corrompidos ou inconsistentes no banco de dados.
+- **Estado:** Vigente
+- **Descrição:** escritas que envolvem várias tabelas (Obra com autores, papéis, gêneros e vínculos; propagação de visibilidade para Volumes; associação de capa; concessão e remoção de perfis) executam em transação ACID, com desfazimento total em caso de falha. Escritas concorrentes sensíveis (publicação, renumeração do Volume 1, perfis administrativos) são serializadas por bloqueios transacionais.
 
 #### RNF10 — Integridade relacional rigorosa via constraints de banco
 
 - **Categoria:** Confiabilidade
 - **Prioridade:** Essencial
-- **Descrição:** O sistema deve assegurar a integridade referencial por chaves estrangeiras, constraints e índices. As relações hierárquicas Obra → Edição → Volume e as referências a valores administrativos devem utilizar ON DELETE RESTRICT quando o registro dependente possuir ciclo de vida próprio. ON DELETE CASCADE deve ser reservado a sessões, vínculos associativos e demais registros sem existência independente, como os vínculos removidos com a exclusão permanente de uma conta.
+- **Estado:** Vigente
+- **Descrição:** a integridade referencial é garantida por chaves estrangeiras, restrições e índices únicos. A hierarquia Obra → Edição → Volume, as referências a valores administrativos, as capas e os perfis de sistema usam exclusão restrita. A exclusão em cascata fica reservada a registros sem existência própria: sessões, perfis concedidos e tokens de redefinição da conta; os vínculos associativos da Obra (autores, papéis, gêneros, demografias, editoras originais e pré-publicações); as variantes de imagem de uma capa (MediaVariant); e as dependências de país de um valor de lista, que são apagadas com o valor dependente (o país referenciado usa exclusão restrita). Estruturas de banco mudam apenas por migrations versionadas.
 
 #### RNF11 — Continuidade de dados e recuperação de desastres (DRP)
 
 - **Categoria:** Confiabilidade
 - **Prioridade:** Importante
-- **Descrição:** O projeto deve manter uma política documentada de continuidade e recuperação de dados compatível com os recursos disponíveis no provedor PostgreSQL em nuvem. RPO alvo de 24 horas: a estratégia de backup deve limitar a perda máxima tolerável a um dia. RTO alvo de 4 horas: o procedimento de restauração deve buscar o retorno da operação em até quatro horas após a confirmação do incidente. Retenção mínima alvo de 7 dias: snapshots do provedor ou backups lógicos equivalentes devem preservar versões recuperáveis durante esse período. As limitações do plano contratado devem ser registradas. Quando o plano gratuito não oferecer os recursos necessários, a equipe deve complementar a política com exportações lógicas e testes periódicos de restauração.
+- **Estado:** Vigente
+- **Descrição:** o PostgreSQL está hospedado no Neon, com bancos separados para desenvolvimento, testes e implantação. As metas de continuidade são RPO de 24 horas, RTO de 4 horas e retenção mínima de 7 dias de pontos recuperáveis, por recursos do provedor ou backups lógicos equivalentes. As limitações do plano contratado devem ser registradas e, quando o plano não oferecer esses recursos, complementadas com exportações lógicas e testes periódicos de restauração. Não há, nos repositórios, procedimento versionado de backup e restauração que comprove essas metas.
 
 #### RNF12 — Observabilidade e Tratamento de Exceções (Graceful Failure)
 
 - **Categoria:** Confiabilidade
 - **Prioridade:** Essencial
-- **Descrição:** O sistema deve implementar uma camada global de tratamento de erros (Global Error Handler) que impeça o encerramento abrupto do processo (crash) diante de exceções não previstas. Métrica de Resposta: 100% das falhas de requisição (erros 4XX e 5XX) devem retornar um objeto JSON padronizado ao cliente, contendo uma mensagem amigável e um código de erro, nunca expondo o stack trace (rastro do código) em ambiente de produção. Métrica de Registro (Log): Todas as exceções de servidor devem ser capturadas e registradas em um serviço de observabilidade ou sistema de logs estruturados (ex: Console formatado ou arquivo rotativo), permitindo a rastreabilidade do erro (qual rota, qual horário e qual a mensagem técnica) para diagnóstico posterior.
+- **Estado:** Vigente
+- **Descrição:** um tratador global de erros impede a queda do processo por exceções não previstas. Toda falha de requisição retorna JSON com o campo `error` em linguagem natural. As falhas que passam pelo tratador global incluem também `code`. Erros 5xx retornam apenas "Erro interno do servidor.", sem rastro de pilha nem códigos internos do ORM. Rotas inexistentes retornam "Rota não encontrada.". Exceções de servidor são registradas em log estruturado com identificador da requisição, método e rota, sem dados sensíveis nas rotas de autenticação. A API expõe verificação de saúde em `/health`.
 
 ### 5.4. Categoria: Usabilidade
 
@@ -823,22 +1172,133 @@ Visão do Produto: O CoMangá é uma aplicação web independente, projetada par
 
 - **Categoria:** Usabilidade
 - **Prioridade:** Importante
-- **Descrição:** O sistema deve fornecer feedback visual imediato e semântico para todas as ações executadas pelo usuário. Este feedback deve ser implementado via notificações flutuantes (Toasts) padronizadas: Mapeamento de Sucesso (Verde): Para operações concluídas com sucesso (ex: "Obra cadastrada"), com tempo de exibição de 3 segundos. Mapeamento de Erro (Vermelho): Para falhas de sistema ou validação, isolando o usuário de mensagens técnicas do compilador ou do banco. A mensagem deve ser traduzida para linguagem natural (ex: "Não foi possível conectar ao servidor") e permanecer em tela por 5 segundos ou até o fechamento manual. Acessibilidade: As cores devem possuir contraste adequado (padrão WCAG) e as notificações devem ser compatíveis com leitores de tela (atributo aria-live).
+- **Estado:** Vigente
+- **Descrição:** o resultado das ações aparece em notificações flutuantes padronizadas no canto superior direito. Sucesso usa destaque verde, erro usa destaque vermelho e aviso usa destaque neutro. As notificações ficam visíveis por 5 segundos por padrão e têm botão de fechar. As mensagens são em linguagem natural, sem detalhes técnicos. Erros de campo de formulário aparecem junto ao próprio campo (padrão inline), com marcação de inválido e anúncio a leitores de tela.
 
 #### RNF14 — Adaptabilidade de interface e navegação responsiva (Mobile-First)
 
 - **Categoria:** Usabilidade
 - **Prioridade:** Importante
-- **Descrição:** O sistema deve adaptar sua arquitetura de navegação e layout de forma fluida conforme a largura de tela do dispositivo de acesso, priorizando a experiência em dispositivos móveis (Mobile-First Strategy). A transição de layout deve obedecer aos seguintes critérios técnicos: Limiar de Transição (Breakpoint): O ponto de quebra para alteração da navegação principal é fixado em 768px. Contexto Mobile (< 768px): A navegação principal deve ser obrigatoriamente realizada via Bottom Navigation Bar (Barra Inferior), otimizando a ergonomia para o alcance do polegar (Thumb Zone). Contexto Desktop (≥ 768px): A navegação deve transitar para uma Sidebar (Barra Lateral) persistente ou retrátil, aproveitando o espaço horizontal para exibição de rótulos e submenus. Estratégia de Estilos: O CSS deve ser estruturado de forma que os estilos base sejam para dispositivos móveis, utilizando Media Queries apenas para expandir o layout para telas maiores, garantindo performance de renderização em dispositivos de menor capacidade.
+- **Estado:** Vigente
+- **Descrição:** o layout parte dos estilos móveis e se expande por pontos de quebra. Abaixo de 768 px, a navegação principal fica numa barra inferior fixa. De 768 px a 1023 px, fica numa barra lateral compacta, só com ícones. A partir de 1024 px, fica numa barra lateral completa, com rótulos. A página não deve ter rolagem horizontal.
 
 #### RNF15 — Padronização geométrica e resiliência visual de capas
 
 - **Categoria:** Usabilidade
 - **Prioridade:** Importante
-- **Descrição:** O sistema deve garantir a harmonia estrutural e a estabilidade do layout na Vitrine/Catálogo (especialmente no componente MangaCard), independentemente da resolução, tamanho ou proporção original das imagens cadastradas. Para proteger a interface contra quebras de grid e variações abruptas de layout (Cumulative Layout Shift), o sistema deve aplicar obrigatoriamente as seguintes diretrizes na renderização de capas: Proporção Geométrica: Uso estrito da propriedade CSS aspect-ratio: 2/3 para refletir o formato físico tradicional dos volumes impressos. Preenchimento: Uso obrigatório de object-fit: cover para garantir o preenchimento total do contêiner designado, realizando o corte automático das bordas excedentes sem distorcer (stretch) a obra original. Estado de Fallback (Resiliência): Caso o recurso interno da imagem falhe ao carregar (erro 404) ou a capa esteja ausente, o componente deve exibir imediatamente um estado de placeholder visualmente agradável (como um gradiente cinza neutro ou uma imagem padrão com a logomarca do sistema), mantendo o aspect-ratio intacto e informando visualmente que a capa original está indisponível.
+- **Estado:** Vigente
+- **Descrição:** as capas são exibidas em proporção 2:3, com preenchimento sem distorção (corte das bordas excedentes), para evitar quebra de grade e deslocamentos de layout. Se a imagem falhar ou estiver ausente, o componente mantém a proporção e exibe o estado “Sem capa”. Divergência na implementação: ver seção 6.3. Nas telas administrativas, a Edição sem capa exibe “Sem capa (cadastre o Volume 1)”.
 
 #### RNF16 — Design semântico de Estados Vazios (Empty States)
 
 - **Categoria:** Usabilidade
 - **Prioridade:** Importante
-- **Descrição:** Toda visualização que possa retornar zero registros deve apresentar um estado vazio explícito, sem deixar tabelas ou áreas de conteúdo sem explicação. O estado vazio deve conter uma mensagem diagnóstica em linguagem natural e, quando existir uma ação útil, um botão ou link para o próximo passo, como limpar filtros ou cadastrar um registro. O uso de ícone ou ilustração é opcional e deve respeitar o padrão visual da interface.
+- **Estado:** Vigente
+- **Descrição:** toda visualização que possa retornar zero registros apresenta um estado vazio explícito, com mensagem em linguagem natural e, quando houver ação útil, um botão ou link para o próximo passo (limpar filtros, voltar ao catálogo, cadastrar um registro). Estados de carregamento e de erro recuperável oferecem “Tentar novamente” quando aplicável.
+
+## 6. Itens cancelados, fora de escopo e divergências
+
+### 6.1. Itens cancelados
+
+Estes itens constavam de versões anteriores e não fazem mais parte do sistema. Não devem ser reintroduzidos como campos ou funcionalidades atuais.
+
+| Item | Onde aparecia | Situação atual |
+| --- | --- | --- |
+| Tipo de Edição (Tankobon, Kanzenban, 2 em 1...) | RF0019, RF0020, RF0022, RF0039, RF0040, RN0031, RN0033 | Removido do schema e da lista administrativa `tipos-edicao`, com seus valores apagados por migration. |
+| Número de volumes originais da Obra | RF0013, RF0038, RN0026 | Removido por ser ambíguo entre mangás, novels, manhwas e outras formas de publicação. |
+| Capa própria da Edição | RF0019, RF0022, RF0040, RN0033, RF0050 | Substituída pela capa derivada do Volume 1 (RN0069). |
+| Gestão de tipos de Obra e gêneros em “Gerenciar opções” (criar, renomear, excluir, alterar países, ativar ou desativar) | RF0030, RF0031, RF0032 | Cancelada. São valores fixos do sistema (RN0066). |
+| Indicador de conteúdo adulto na ficha pública da Obra | RF0038 | Não é exibido. O conteúdo adulto só controla a visibilidade (RN0048). |
+| Mensagem única de privacidade de perfil ("Acesso negado: Você não tem permissão para acessar ou modificar os dados deste perfil.") | RN0022 | Não existe. As rotas da própria conta não recebem identificador de terceiros (RN0022) e as recusas administrativas seguem RN0064. |
+| Nível de acesso único por conta (RF0035 antes se chamava “Alterar nível de acesso de uma conta de usuário específica”) | RF0034, RF0035, RN0005, RN0045 | Substituído pelos perfis concedidos e pelo perfil ativo (RN0062). O campo `nivel_acesso` é mantido apenas por compatibilidade. |
+| Miolo único na Edição e miolo herdado no detalhe do Volume | RF0019, RF0020, RF0040, RF0041, RN0033, RN0072 | Substituído por lista ordenada de miolos na Edição; o detalhe de Volume não retorna nem exibe o campo. |
+| Cloudinary como armazenamento de capas | Documentação técnica anterior | POC abandonada. O armazenamento ativo é o Cloudflare R2. |
+
+Nenhum RF ou RN foi cancelado por inteiro. Os requisitos acima continuam vigentes sem os trechos cancelados.
+
+### 6.2. Futuro (planejado)
+
+- RF0042 a RF0049 e RN0042, RN0050, RN0052 a RN0057: Calendário de Lançamentos, Estante Digital e Lista de Desejos.
+- RF0054: bloqueio e desbloqueio de contas.
+- RNF17: expiração de sessão.
+
+Esses requisitos descrevem o comportamento esperado para a implementação futura e não o sistema atual.
+
+### 6.3. Divergências conhecidas entre especificação e implementação
+
+- **RN0041:** a exclusão de Volume público é recusada com a mensagem da Obra ("Essa Obra está pública, não pode ser excluída!") em vez de "Esse Volume está público, não pode ser excluído!".
+- **RN0026:** o título original é opcional, mas o formulário da Web o exige na etapa de identificação, junto com título em português, título romanizado, país e tipo. É um defeito da Web, não uma regra.
+- **RNF03:** as listagens do catálogo público e as administrativas de Obras, Edições e Volumes respeitam o teto de 50 itens por página, mas as listagens administrativas de contas e de valores de listas aceitam até 100 itens por página, acima do teto de 50 especificado.
+- **RN0065:** as rotas `/colecao/{slug}/edicao/{editionId}` e `/colecao/{slug}/edicao/{editionId}/selecionar/{modo}` reutilizam as páginas públicas de Edição sem a proteção de página pública. Com o perfil Administrador ativo, elas continuam acessíveis. São protótipo da Estante Digital, e a falta de proteção é um defeito a corrigir: devem seguir RN0065.
+- **RN0064:** a mensagem de recusa administrativa da API está sem acentos ("voce nao possui permissao"), diferente do padrão textual do sistema.
+- **Status “Bloqueada”:** é reconhecido no login, no reenvio, na recuperação e no filtro de contas, mas não há fluxo que bloqueie uma conta. O fluxo é planejado no RF0054.
+- **RN0066:** a API ainda aceita ativar e desativar tipos de Obra e gêneros por requisição direta, embora esses valores não tenham gestão pelo Administrador. É uma divergência residual a remover, não uma funcionalidade. A Web guarda o código correspondente, hoje inalcançável: o carregamento com valores inativos e a ação de ativar e desativar (`toggleActive` e `includeInactive` em `useAdminOptionsPage.ts`), o aviso com cadeado e o botão “Ativar”/“Desativar” (`AdminOptionsView.tsx`) e a verificação `isSystemManagedCategory` (`adminOptionsModel.ts`). Nada disso é exibido, porque a lista de categorias da tela (`CATEGORIES`) não inclui tipos de Obra nem gêneros. É código morto a remover junto do resíduo da API.
+- **RN0068:** a API recusa papéis incompatíveis para o mesmo autor com a mensagem genérica "Preencha os campos obrigatórios da Obra.", no cadastro e na alteração. A mensagem específica "Selecione apenas História e Arte, História ou Arte para o mesmo autor." existe na validação, mas não é repassada na resposta.
+- **RN0039:** o ISBN com dígito verificador inválido é recusado sem as mensagens específicas "ISBN-10 inválido." e "ISBN-13 inválido.". O cadastro responde "Preencha os campos obrigatórios do Volume." e a alteração, "Informe ao menos um campo valido para alterar." (texto atual, sem acento). A Web não valida o ISBN antes de enviar.
+- **RNF08 e RF0004:** quando o login é bloqueado por excesso de tentativas (HTTP 429), a Web não exibe "Muitas tentativas de login. Tente novamente em alguns minutos." e mostra apenas "Erro ao conectar com o servidor.", porque só repassa as mensagens de HTTP 401 e 403.
+- **RN0072, RF0038 e RF0040:** a Web preenche períodos de publicação ausentes com textos genéricos. Na ficha da Obra, sem anos exibe “Não informado” e, só com o ano de início, “2020-??”. Na ficha da Edição, sem ano de início (sem Volumes públicos datados) exibe “Não informada” e, sem ano de fim, “2020-??”. Pela regra, o item ausente deveria ser omitido.
+- **RN0072, RNF15 e RN0061:** na vitrine de Edições e no detalhe da Edição, a capa ausente aparece como “Capa indisponível”, e não com o estado especificado “Sem capa”.
+- **RF0030:** a Web envia um valor de miolo com vírgula como um único valor, mas a API o separa em vários valores. Só os formatos preservam a vírgula na API.
+
+## 7. Matriz de rastreabilidade
+
+A coluna “Cenários” indica a seção homônima do documento `02-User-Stories/User Stories e Cenários Gherkin - CoMangá.md`.
+
+| RF | Estado | RNs | Cenários |
+| --- | --- | --- | --- |
+| RF0001 | Vigente | RN0001–RN0007, RN0020, RN0048 | RF0001 |
+| RF0002 | Vigente | RN0007, RN0008 | RF0002 |
+| RF0003 | Vigente | RN0007, RN0009–RN0011 | RF0003 |
+| RF0004 | Vigente | RN0012–RN0014, RN0062 | RF0004 |
+| RF0005 | Vigente | RN0014 | RF0005 |
+| RF0006 | Vigente | RN0015–RN0017 | RF0006 |
+| RF0007 | Vigente | RN0002, RN0014, RN0017–RN0020 | RF0007 |
+| RF0008 | Vigente | RN0002, RN0014, RN0020, RN0021, RN0073 | RF0008 |
+| RF0009 | Vigente | RN0022, RN0062 | RF0009 |
+| RF0010 | Vigente | RN0001, RN0004, RN0022 | RF0010 |
+| RF0011 | Vigente | RN0022, RN0048 | RF0011 |
+| RF0012 | Vigente | RN0014, RN0021, RN0022, RN0063 | RF0012 |
+| RF0013 | Vigente | RN0023–RN0027, RN0066–RN0068 | RF0013 |
+| RF0014 | Vigente | RN0023–RN0026, RN0060, RN0066–RN0068 | RF0014 |
+| RF0015 | Vigente | RN0028, RN0029 | RF0015 |
+| RF0016 | Vigente | RN0061 | RF0016 |
+| RF0017 | Vigente | — | RF0017 |
+| RF0018 | Vigente | RN0030 | RF0018 |
+| RF0019 | Vigente | RN0031–RN0034, RN0069 | RF0019 |
+| RF0020 | Vigente | RN0031–RN0033 | RF0020 |
+| RF0021 | Vigente | RN0035, RN0036 | RF0021 |
+| RF0022 | Vigente | RN0051, RN0061, RN0069 | RF0022 |
+| RF0023 | Vigente | — | RF0023 |
+| RF0024 | Vigente | RN0037, RN0040, RN0042 (futura), RN0069 | RF0024 |
+| RF0025 | Vigente | RN0038–RN0040 | RF0025 |
+| RF0026 | Vigente | RN0038, RN0039, RN0060, RN0069 | RF0026 |
+| RF0027 | Vigente | RN0041 | RF0027 |
+| RF0028 | Vigente | RN0061 | RF0028 |
+| RF0029 | Vigente | — | RF0029 |
+| RF0030 | Vigente | RN0043, RN0066 | RF0030 |
+| RF0031 | Vigente | RN0043, RN0066 | RF0031 |
+| RF0032 | Vigente | RN0044, RN0066 | RF0032 |
+| RF0033 | Vigente | RN0066 | RF0033 |
+| RF0034 | Vigente | RN0062 | RF0034 |
+| RF0035 | Vigente | RN0045, RN0062, RN0063 | RF0035 |
+| RF0036 | Vigente | RN0046–RN0049, RN0065 | RF0036 |
+| RF0037 | Vigente | RN0046–RN0049, RN0051, RN0065, RN0069 | RF0037 |
+| RF0038 | Vigente | RN0046, RN0048, RN0050 (futura), RN0061, RN0065, RN0071, RN0072 | RF0038 |
+| RF0039 | Vigente | RN0046, RN0048, RN0050 (futura), RN0051, RN0061, RN0065, RN0069, RN0072 | RF0039 |
+| RF0040 | Vigente | RN0046, RN0048, RN0050 (futura), RN0051, RN0061, RN0065, RN0069, RN0071, RN0072 | RF0040 |
+| RF0041 | Vigente | RN0046, RN0048, RN0050 (futura), RN0061, RN0065, RN0070–RN0072 | RF0041 |
+| RF0042 | Futuro | RN0046, RN0048, RN0052 | RF0042 |
+| RF0043 | Futuro | RN0053–RN0056 | RF0043 |
+| RF0044 | Futuro | RN0053, RN0055 | RF0044 |
+| RF0045 | Futuro | RN0053–RN0056 | RF0045 |
+| RF0046 | Futuro | RN0053, RN0055, RN0056 | RF0046 |
+| RF0047 | Futuro | RN0053, RN0055–RN0057 | RF0047 |
+| RF0048 | Futuro | RN0053, RN0055 | RF0048 |
+| RF0049 | Futuro | RN0053, RN0055, RN0056 | RF0049 |
+| RF0050 | Vigente | RN0058–RN0061 | RF0050 |
+| RF0051 | Vigente | RN0046, RN0048, RN0065 | RF0051 |
+| RF0052 | Vigente | RN0062, RN0064, RN0065 | RF0052 |
+| RF0053 | Vigente | RN0014, RN0064, RN0065 | RF0053 |
+| RF0054 | Futuro | RN0013 | RF0054 |
+
+As regras transversais RN0064 (autorização administrativa) e RN0065 (separação de páginas) valem para todos os RFs dos módulos de Administração e de Catálogo Público, respectivamente, e têm cenários próprios em RF0053.
