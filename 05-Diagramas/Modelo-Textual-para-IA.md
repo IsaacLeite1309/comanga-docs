@@ -30,7 +30,7 @@ Visitante / Usuário autenticado / Administrador
          v                     v
 [IMPLEMENTADO] PostgreSQL   [IMPLEMENTADO] Serviços externos
   - usuários e sessões        - armazenamento interno de capas
-  - catálogo e opções          - SMTP para mensagens de conta
+  - catálogo e opções          - API HTTP do Resend para mensagens de conta
   - metadados de mídia
 ```
 
@@ -42,7 +42,7 @@ flowchart LR
     W -->|REST + cookie HttpOnly| API[API REST - monólito modular]
     API --> DB[(PostgreSQL)]
     API --> R2[Armazenamento interno de mídia]
-    API --> SMTP[Serviço SMTP]
+    API --> RESEND[API HTTP do Resend]
 ```
 
 ### Limites arquiteturais
@@ -234,7 +234,7 @@ arbitrariamente a um mês do calendário.
 1. Visitante envia nome de usuário, e-mail, data de nascimento, senha e confirmação.
 2. API valida dados, unicidade, data válida/não futura e regra de senha.
 3. API cria Usuário com status Pendente e preferência +18 desativada.
-4. API gera token de ativação e envia o link por SMTP.
+4. API gera token de ativação e envia o link pela API HTTP do Resend.
 5. Usuário abre o link; a API valida token e expiração, ativa a conta e invalida o token.
 6. No login, a API valida senha e status, cria Sessão e devolve cookie HttpOnly.
 7. Em toda rota protegida, middleware valida a Sessão no servidor.
@@ -245,7 +245,7 @@ arbitrariamente a um mês do calendário.
 ```text
 [PLANEJADO]
 1. Usuário solicita recuperação com o e-mail.
-2. API gera token seguro, com expiração, e envia link por SMTP.
+2. API gera token seguro, com expiração, e envia link pela API HTTP do Resend.
 3. Usuário informa nova senha e confirmação pelo link.
 4. API valida token e senha, atualiza o hash da senha e invalida o token.
 5. API revoga as sessões ativas da conta.

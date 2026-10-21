@@ -9,7 +9,7 @@ O CoMangá é composto por uma SPA React hospedada na Vercel e uma API REST Node
 ```text
 React/Vercel -> API REST/Render -> PostgreSQL/Neon
                               -> Cloudflare R2
-                              -> SMTP
+                              -> API HTTP do Resend
 ```
 
 Até o momento, estão implementados autenticação e sessões, administração de usuários/opções, Obras, Edições, Volumes, importação interna de capas, vitrine pública, detalhes públicos e listagem de Obras por Autor. Calendário, Estante Digital, Lista de Desejos, enriquecimento autenticado e a evolução para uma arquitetura distribuída permanecem planejados.
