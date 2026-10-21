@@ -26,7 +26,7 @@ Até o momento, estão implementados autenticação e sessões, administração 
 
 ## Fontes Markdown
 
-As versões Markdown são as fontes de manutenção e leitura automatizada. Os PDF e DOCX continuam disponíveis como versões diagramadas para leitura e entrega humana.
+As versões Markdown são as fontes de manutenção e leitura automatizada. Os PDFs continuam disponíveis como versões diagramadas para leitura e entrega humana. As revisões de recuperação de senha e acesso administrativo a conteúdo adulto estão nos Markdown; os PDFs preservam a versão anterior.
 
 - [SERS](./01-SERS/SERS%20-%20CoMang%C3%A1%20-%20Revisado.md)
 - [User Stories e Cenários Gherkin](./02-User-Stories/User%20Stories%20e%20Cen%C3%A1rios%20Gherkin%20-%20CoMang%C3%A1.md)

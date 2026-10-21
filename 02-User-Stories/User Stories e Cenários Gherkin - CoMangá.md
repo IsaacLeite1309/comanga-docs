@@ -208,31 +208,50 @@ And deve retornar HTTP 401 com uma resposta JSON padronizada de sessão inválid
 ```gherkin
 Feature: Solicitar redefinição de senha de acesso via e-mail
 
+Background:
+Given que a solicitação usa e-mail com formato válido e está dentro do limite permitido
+
 Scenario: Caminho Feliz - Sucesso na solicitação e disparo de e-mail de redefinição
 Given que eu possuo uma conta no banco de dados com o status "Ativada"
 And eu informo corretamente o meu endereço de e-mail na tela de recuperação
 When eu submeto a solicitação de redefinição de senha
 Then o sistema deve gerar um token de verificação com validade estrita de 1 hora
 And deve disparar automaticamente uma mensagem para o e-mail cadastrado contendo o link associado ao token
+And deve retornar HTTP 200 com a mensagem "Se houver uma conta apta para este e-mail, enviaremos as instruções de recuperação."
+And deve persistir somente o hash do token em estrutura separada da ativação
 
-Scenario: Caminho Alternativo 1 - Falha na solicitação por e-mail inexistente (RN0015)
+Scenario: Caminho Alternativo 1 - Resposta neutra para e-mail inexistente (RN0015)
 Given que eu estou na tela de recuperação de senha
 When eu submeto uma solicitação informando um endereço de e-mail que não está cadastrado no banco de dados
-Then o sistema deve recusar a transação
-And deve retornar a mensagem de erro: "E-mail não cadastrado!"
+Then o sistema deve retornar HTTP 200 com a mensagem "Se houver uma conta apta para este e-mail, enviaremos as instruções de recuperação."
+And não deve gerar token nem enviar e-mail
+And não deve revelar a inexistência da conta na resposta
 
-Scenario: Caminho Alternativo 2 - Falha na solicitação por conta pendente (RN0016)
-Given que a minha conta cadastrada possui o status atual como "Pendente"
+Scenario Outline: Caminho Alternativo 2 - Resposta neutra para conta não elegível (RN0016)
+Given que a minha conta cadastrada possui o status "<status>"
 When eu submeto a solicitação de redefinição de senha com o meu e-mail
-Then o sistema deve recusar a transação
-And deve retornar a mensagem de erro: "Ative a conta com o e-mail de verificação enviado anteriormente para alterar a senha."
+Then o sistema deve retornar HTTP 200 com a mensagem "Se houver uma conta apta para este e-mail, enviaremos as instruções de recuperação."
+And não deve gerar token nem enviar e-mail
+And deve preservar o status da conta
+
+Examples:
+  | status    |
+  | Pendente  |
+  | Bloqueada |
 
 Scenario: Caminho Alternativo 3 - Falha no uso de token de redefinição expirado (RN0017)
 Given que eu solicitei a redefinição de senha e recebi o e-mail com o link de verificação
-And já se passaram mais de 1 hora desde a geração do token
+And já se passou exatamente 1 hora desde a geração do token
 When eu tento acessar o link ou submeter o token expirado para o sistema
 Then o sistema deve recusar a transação
 And deve retornar a mensagem de erro: "Este link de redefinição expirou. Solicite a redefinição novamente."
+
+Scenario: Caminho Alternativo 4 - Resposta neutra quando o SMTP falha (RN0015)
+Given que minha conta está ativada e a solicitação está dentro do limite permitido
+When eu solicito a recuperação com e-mail válido e ocorre uma falha no envio por SMTP
+Then o sistema deve retornar HTTP 200 com a mensagem "Se houver uma conta apta para este e-mail, enviaremos as instruções de recuperação."
+And não deve incluir indicador de envio nem detalhes técnicos na resposta
+And deve registrar a falha sem token, senha ou credenciais
 ```
 
 ## RF0007: Redefinir senha de acesso via token de redefinição
@@ -261,7 +280,7 @@ Then o sistema deve recusar a transação
 And deve retornar a mensagem de erro específica para o campo: "Utilize no mínimo 8 caracteres, incluindo pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial."
 
 Scenario: Caminho Alternativo 2 - Falha na redefinição por uso de token expirado (RN0017)
-Given que eu possuo um token de redefinição gerado há mais de 1 hora
+Given que eu possuo um token de redefinição gerado há 1 hora ou mais
 When eu preencho as senhas corretamente
 And submeto a transação contendo o token de redefinição expirado
 Then o sistema deve recusar a transação
@@ -415,6 +434,19 @@ And minha data de nascimento válida indica menos de 18 anos completos
 When eu solicito a alteração da preferência de conteúdo adulto para "Ativado"
 Then o sistema deve recusar a ativação e manter a preferência desativada
 And deve omitir conteúdo adulto das respostas públicas destinadas à minha conta
+
+Scenario: Caminho Alternativo 3 - Administração preserva acesso ao catálogo completo (RN0048)
+Given que possuo uma sessão válida e o papel de Administrador
+And tenho menos de 18 anos e minha preferência de conteúdo adulto está desativada
+When consulto conteúdo adulto nas rotas administrativas
+Then o sistema deve permitir a consulta após validar o papel administrativo, independentemente da idade
+And a consulta nas áreas públicas deve continuar respeitando maioridade e preferência
+And a exceção administrativa não deve permitir ativar a preferência pública para menores
+
+Scenario: Caminho Alternativo 4 - Usuário padrão não pode usar a exceção administrativa (RN0048)
+Given que possuo uma sessão válida com o papel de Usuário Padrão
+When tento consultar o catálogo por uma rota administrativa
+Then o sistema deve retornar HTTP 403 sem expor os dados administrativos
 ```
 
 ## RF0012: Excluir permanentemente conta de acesso e dados vinculados
