@@ -4,7 +4,7 @@
 
 O CoManga é uma plataforma para catalogação e gerenciamento de coleções físicas de mangás. O domínio organiza Obras, Edições brasileiras e Volumes físicos, permitindo que o acervo seja administrado e consultado em uma experiência pública de catálogo.
 
-A implementação atual reúne autenticação, administração de usuários e opções de domínio, cadastro de Obras, Edições e Volumes, importação de capas, vitrine pública, detalhes públicos e listagem de Obras por Autor. Estante Digital, Lista de Desejos, calendário público e o enriquecimento autenticado das respostas públicas permanecem previstos para as próximas etapas.
+A implementação atual reúne autenticação, administração de usuários e opções de domínio, cadastro de Obras, Edições e Volumes, importação de capas, vitrine pública, detalhes públicos e listagem de Obras por Autor. Também inclui Estante Digital, Lista de Desejos, calendário público de lançamentos e respostas públicas ajustadas ao contexto da sessão.
 
 Este documento registra as decisões arquiteturais efetivamente adotadas, com foco em integridade dos dados, segurança, privacidade, manutenção e evolução gradual do produto.
 
@@ -18,15 +18,17 @@ O fluxo principal é: navegador -> SPA React hospedada na Vercel -> API REST hos
 
 O frontend, no repositório comanga-web, é uma Single Page Application construída com React, TypeScript e Vite. React Router controla as rotas no navegador; Axios centraliza as chamadas HTTP; Tailwind CSS compõe a interface; Vitest e React Testing Library suportam os testes da camada visual.
 
-A aplicação possui rotas públicas de pesquisa, Obras, Edições, Volumes e Autores, além de rotas de perfil e administração. O código é organizado por funcionalidades, com componentes compartilhados separados das páginas e serviços de cada domínio.
+A aplicação possui rotas públicas de pesquisa, Obras, Edições, Volumes, Autores e lançamentos, além de rotas de perfil, coleção, Lista de Desejos e administração. O código é organizado por funcionalidades, com componentes compartilhados separados das páginas e serviços de cada domínio.
 
 O Axios usa VITE_API_URL ou /api como base e envia credenciais junto às requisições. Em produção, a Vercel redireciona /api para o backend na Render, preservando o uso do cookie de sessão.
+
+As consultas do catálogo usam cache temporário no navegador para reutilizar páginas já carregadas e antecipar consultas relacionadas. Alterações no acervo atualizam ou invalidam os dados afetados; mudanças de sessão limpam os dados vinculados à identidade anterior.
 
 ### Camada de Aplicação (Backend)
 
 O backend, no repositório comanga-api, utiliza Node.js, Express e TypeScript e expõe uma API REST. Ele concentra regras de negócio, validação de entrada, autorização, visibilidade pública, tratamento de erros, logs com identificador de requisição e integração com os serviços externos.
 
-A aplicação é publicada como um monólito modular na Render, e não como microserviços. Internamente, os módulos são separados por domínio: autenticação, usuários, administração, catálogo e catálogo público. A arquitetura se inspira em Clean Architecture e Ports and Adapters de forma pragmática; alguns módulos ainda acessam o Prisma diretamente.
+A aplicação é publicada como um monólito modular na Render, e não como microserviços. Internamente, os módulos são separados por domínio: autenticação, usuários, administração, catálogo, catálogo público e acervo pessoal. A arquitetura se inspira em Clean Architecture e Ports and Adapters de forma pragmática; alguns módulos ainda acessam o Prisma diretamente.
 
 O fluxo usual é rota Express -> middleware -> schema Zod -> controller ou módulo -> regra de negócio -> Prisma -> mapper ou DTO -> resposta JSON. As rotas são organizadas em /api/auth, /api/users, /api/admin e /api/public.
 
@@ -34,7 +36,7 @@ O fluxo usual é rota Express -> middleware -> schema Zod -> controller ou módu
 
 O PostgreSQL é hospedado no Neon e acessado exclusivamente pelo backend com Prisma ORM. O frontend nunca se conecta diretamente ao banco. Há bancos Neon separados para desenvolvimento, testes e deploy, evitando que operações de cada ambiente afetem os demais.
 
-A modelagem central contempla Usuário e Sessão, além da hierarquia Obra -> Edição -> Volume. Relações com autores, papéis de autoria, gêneros, demografias, editoras, formatos e outras opções administrativas são modeladas de forma relacional. Chaves estrangeiras, constraints, índices e transações preservam a integridade necessária.
+A modelagem central contempla Usuário e Sessão, além da hierarquia Obra -> Edição -> Volume. Relações com autores, papéis de autoria, gêneros, demografias, editoras, formatos e outras opções administrativas são modeladas de forma relacional. O vínculo entre usuário e volume registra posse ou desejo e, para volumes possuídos, o estado de leitura. Chaves estrangeiras, constraints, índices e transações preservam a integridade necessária, inclusive nas alterações em lote.
 
 As mudanças físicas do banco são versionadas por migrations do Prisma. Uma migration já aplicada não é alterada; correções posteriores são registradas em nova migration para manter a reprodutibilidade entre os ambientes.
 
@@ -80,4 +82,4 @@ Custo controlado no MVP: a solução utiliza as camadas gratuitas ou de baixo cu
 
 Integridade e privacidade: operações críticas preservam relações e consistência por meio de constraints, índices, migrations e transações. A API é a autoridade sobre sessão, permissões, visibilidade e conteúdo adulto.
 
-Manutenibilidade e evolução: TypeScript, módulos por domínio, contratos de infraestrutura, Prisma, testes e separação de ambientes reduzem o risco de regressão. A arquitetura suporta a evolução planejada do calendário público, Estante Digital, Lista de Desejos e enriquecimento das respostas públicas sem exigir uma reestruturação completa.
+Manutenibilidade e evolução: TypeScript, módulos por domínio, contratos de infraestrutura, Prisma, testes e separação de ambientes reduzem o risco de regressão. Calendário público, Estante Digital, Lista de Desejos e enriquecimento das respostas públicas integram a aplicação atual; novas funcionalidades podem evoluir dentro dos módulos existentes sem exigir uma reestruturação completa.
