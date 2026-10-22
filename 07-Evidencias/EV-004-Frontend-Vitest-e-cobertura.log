@@ -1,0 +1,155 @@
+
+> comanga-web@0.0.0 test:coverage
+> vitest run --coverage --maxWorkers=2
+
+
+ RUN  v4.1.11 C:/Users/isaac/dev/workspace/comanga-workspace/comanga-web
+      Coverage enabled with v8
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+ Test Files  60 passed (60)
+      Tests  556 passed (556)
+   Start at  22:59:12
+   Duration  89.05s (transform 2.98s, setup 5.93s, import 14.99s, tests 101.56s, environment 36.12s)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   89.01 |    83.25 |   88.95 |   91.17 |
+ src/app           |   71.05 |    84.31 |   55.55 |   73.07 |
+  ...uPrefetch.tsx |       0 |        0 |       0 |       0 | 9-70
+  ...rollReset.tsx |    90.9 |      100 |      80 |     100 |
+  GuestRoute.tsx   |     100 |    83.33 |     100 |     100 | 18
+  ...ctedRoute.tsx |     100 |    96.29 |     100 |     100 | 48
+  PublicNav.tsx    |   96.15 |    92.85 |     100 |   95.65 | 63
+  ...fileRoute.tsx |     100 |     92.3 |     100 |     100 | 28
+ ...mponents/forms |    92.8 |    92.01 |   92.72 |      95 |
+  MultiSelect.tsx  |    89.7 |    89.76 |      92 |    93.1 | 277-279,344
+  ...bleSelect.tsx |   94.23 |    91.07 |   90.47 |   95.55 | 147,243
+ ...ponents/shared |   64.28 |    72.22 |   83.33 |   66.66 |
+  BackLink.tsx     |   54.54 |    66.66 |   66.66 |   55.55 | 7-8,18-19
+ src/components/ui |   83.33 |      100 |      75 |   83.33 |
+  sonner.tsx       |       0 |      100 |       0 |       0 | 5-6
+ ...log/components |   89.32 |    82.66 |   85.92 |   88.77 |
+  ...ailShared.tsx |   93.75 |     87.5 |   88.88 |   93.33 | 51
+  ...tionsView.tsx |   81.57 |    71.57 |      75 |    82.6 | ...10,375,396,455
+  ...angasView.tsx |   94.64 |    96.77 |   91.42 |   93.47 | 68,197,255
+  ...tailsView.tsx |   79.31 |    66.66 |   70.58 |   77.77 | 46-51,134-157,222
+  ...tailsView.tsx |   79.31 |    68.42 |   70.58 |   77.77 | 46-86,154
+  ...ormFields.tsx |   81.81 |    71.42 |      80 |   81.81 | 34-38
+  ...ationStep.tsx |   97.14 |       50 |   95.23 |   96.96 | 109
+  ...aSections.tsx |   83.33 |    94.11 |      80 |      80 | 38
+  ...tailsView.tsx |     100 |    94.11 |     100 |     100 | 56
+  ...FormSteps.tsx |   95.45 |    85.18 |      95 |   95.23 | 113
+ ...catalog/domain |   96.51 |    84.37 |   96.77 |      96 |
+  ...logDetails.ts |   88.88 |       80 |   83.33 |   86.66 | 108-112
+  ...Pagination.ts |   96.29 |    93.75 |     100 |      96 | 64
+  workOptions.ts   |     100 |    83.33 |     100 |     100 | 32-35
+ ...-catalog/hooks |   90.43 |    75.28 |    93.3 |   92.67 |
+  newMangaDraft.ts |    62.5 |    46.51 |   86.66 |   65.07 | ...15-117,121-124
+  ...ngaOptions.ts |   96.36 |     87.3 |   95.23 |   98.79 | 179
+  ...Submission.ts |   82.05 |    61.11 |     100 |   88.57 | 35-37,85
+  ...ptionsPage.ts |   85.85 |    58.92 |   79.54 |   87.09 | ...89,409,431-450
+  ...gPagedList.ts |   96.42 |    88.88 |     100 |     100 | 74,94
+  ...MangasPage.ts |   98.18 |    84.09 |     100 |     100 | ...04,158,186-204
+  ...ionDetails.ts |   95.45 |    58.33 |     100 |     100 | 34-80
+  ...Controller.ts |   97.43 |    82.35 |     100 |     100 | 58,67-84,104-131
+  ...wMangaForm.ts |   85.29 |    58.33 |      92 |    87.5 | 97-102,120
+  ...esWarning.tsx |   97.61 |    93.33 |     100 |     100 | 31,35
+  ...umeDetails.ts |     100 |       50 |     100 |     100 | 19-24
+  ...Controller.ts |   92.62 |    87.83 |   92.68 |   94.79 | 117-121
+  ...orkDetails.ts |   92.85 |    77.77 |     100 |      98 | 118
+ ...-catalog/pages |   94.72 |    84.95 |     100 |    99.3 |
+  EditWork.tsx     |     100 |     90.9 |     100 |     100 | 23
+  EditWorkForm.tsx |   96.66 |       80 |     100 |     100 | 40-46,69
+  ...onDetails.tsx |     100 |     87.5 |     100 |     100 | 30-51
+  EditionForm.tsx  |     100 |    89.47 |     100 |     100 | 22,32
+  ...meDetails.tsx |     100 |     92.3 |     100 |     100 | 26
+  VolumeForm.tsx   |     100 |    91.66 |     100 |     100 | 35
+  ...angasModel.ts |     100 |       75 |     100 |     100 | 59
+  ...nFormModel.ts |     100 |    93.75 |     100 |     100 | 73
+  newMangaLogic.ts |   88.49 |    72.72 |     100 |   98.73 | 181
+  ...eFormModel.ts |   92.15 |     91.2 |     100 |   97.56 | 115
+ ...es/admin-media |      84 |    79.36 |   82.35 |   90.47 |
+  ...ionDialog.tsx |   73.33 |    73.33 |      60 |      80 | 29,43
+  ...portField.tsx |   85.71 |    81.25 |      90 |   91.83 | 56-57,73,103
+ ...es/admin-users |   66.66 |      100 |      60 |   66.66 |
+  ...mentMemory.ts |   66.66 |      100 |      60 |   66.66 | 18,32
+ ...in-users/pages |   86.36 |    80.23 |   82.22 |   87.25 |
+  ...anagement.tsx |   86.36 |    80.23 |   82.22 |   87.25 | ...91,600-601,617
+ src/features/auth |    93.2 |    90.65 |   91.11 |   94.44 |
+  AuthCard.tsx     |   92.91 |    93.26 |   94.28 |   93.26 | 384-389,414
+  AuthContext.tsx  |   93.18 |    72.41 |   88.23 |   94.87 | 49-52
+  ...DateField.tsx |   93.42 |     91.3 |   89.65 |   96.61 | 49,52
+  ...ntextState.ts |    87.5 |      100 |      75 |    87.5 | 49
+  useAuth.ts       |      75 |       50 |     100 |      75 | 8
+ ...res/auth/pages |    95.2 |    88.79 |    86.2 |   98.24 |
+  Activate.tsx     |   95.83 |    85.71 |     100 |     100 | 23,36,41
+  ...dRecovery.tsx |   92.75 |    88.88 |      80 |   96.66 | 241-242
+  ...ctivation.tsx |     100 |     91.3 |     100 |     100 | 41,46
+ ...res/collection |   86.95 |       85 |   85.71 |   89.47 |
+  ...onEdition.tsx |   86.95 |       85 |   85.71 |   89.47 | 21-22
+ ...llection/pages |   90.66 |    89.04 |   87.87 |   93.44 |
+  Colecao.tsx      |   90.66 |    89.04 |   87.87 |   93.44 | 53,186-187,226
+ ...rsonal-library |   93.04 |    82.85 |   93.33 |   94.18 |
+  ...ngeDialog.tsx |   76.47 |    75.75 |   71.42 |   84.61 | 22,32
+  ...aryFilters.ts |   91.66 |       75 |   83.33 |    90.9 | 12
+  ...ibraryPage.ts |    92.1 |    88.88 |     100 |   92.85 | 39-40
+ ...ile/components |   97.36 |    96.15 |     100 |     100 |
+  PasswordForm.tsx |   97.95 |    97.05 |     100 |     100 | 56
+  UsernameForm.tsx |   95.65 |    93.75 |     100 |     100 | 19
+ .../profile/hooks |   93.54 |    72.72 |     100 |   96.66 |
+  ...ntSettings.ts |   93.54 |    72.72 |     100 |   96.66 | 27
+ .../profile/pages |   87.14 |    84.84 |   94.11 |   90.62 |
+  UserProfile.tsx  |   87.14 |    84.84 |   94.11 |   90.62 | 292,300-304
+ ...public-catalog |   81.48 |    76.04 |    84.9 |   85.71 |
+  ...agination.tsx |      80 |      100 |   66.66 |      75 | 21
+  ...eshNotice.tsx |      75 |       50 |   66.66 |   71.42 | 9-11
+  ...lumeBadge.tsx |     100 |       60 |     100 |     100 | 8-10
+  ...meActions.tsx |   87.65 |    93.16 |     100 |   90.78 | ...53-154,167-168
+  ...cWorkCard.tsx |      75 |    30.76 |      50 |      75 | 34
+  ...lumeBadge.tsx |     100 |       60 |     100 |     100 | 8-10
+  ...lumeBadge.tsx |     100 |    66.66 |     100 |     100 | 8
+  ...logDetails.ts |   87.23 |    66.66 |   91.66 |    92.1 | 28-31
+  ...Formatters.ts |      90 |    84.61 |     100 |     100 | 10,23
+  ...Navigation.ts |   88.88 |    80.64 |     100 |   86.66 | 23,30
+  ...logService.ts |     100 |    66.66 |     100 |     100 | 34-35
+  ...xceptOrder.ts |   88.88 |     92.3 |     100 |     100 | 2
+  ...olumeCache.ts |   27.77 |    18.91 |   26.66 |      32 | ...44-46,48-66,79
+ ...log/components |   98.55 |    96.87 |   97.87 |   98.36 |
+  ...saFilters.tsx |   97.82 |      100 |   97.43 |   97.56 | 253
+  ...saResults.tsx |     100 |    90.62 |     100 |     100 | 16-32,106
+ ...-catalog/hooks |   90.81 |    90.38 |   85.71 |    94.3 |
+  ...isaCatalog.ts |   90.81 |    90.38 |   85.71 |    94.3 | ...70-376,384,390
+ ...-catalog/pages |   83.57 |    80.23 |   85.49 |   85.57 |
+  ...Selection.tsx |   98.43 |     96.2 |     100 |     100 | 101,109,163
+  Pesquisa.tsx     |     100 |       50 |     100 |     100 | 12
+  ...thorWorks.tsx |   96.77 |    91.17 |    87.5 |   96.55 | 69
+  ...cCalendar.tsx |   52.41 |    57.05 |   56.86 |   53.03 | ...32-304,314-315
+  ...onDetails.tsx |   96.82 |    86.36 |     100 |    98.3 | 315
+  ...meDetails.tsx |   97.87 |    89.74 |     100 |   97.77 | 73
+  ...rkDetails.tsx |   98.18 |    88.15 |     100 |     100 | ...57,206-232,269
+  ...nSelection.ts |   83.08 |     67.9 |   85.71 |   89.77 | ...-54,67,122-123
+  ...icCalendar.ts |   94.59 |     93.5 |     100 |   98.41 | 102
+ ...wishlist/pages |   93.15 |       90 |    93.1 |   96.77 |
+  Desejos.tsx      |   93.15 |       90 |    93.1 |   96.77 | 139-140
+ src/hooks         |   74.46 |    52.94 |   68.75 |   79.06 |
+  useDropdown.ts   |     100 |     87.5 |     100 |     100 | 39
+  ...eryLoading.ts |       0 |        0 |       0 |       0 | 3-20
+ src/lib           |   93.33 |      100 |      80 |    92.3 |
+  queryClient.ts   |      80 |      100 |       0 |      80 | 18
+ src/services      |   28.57 |    14.28 |       0 |   28.57 |
+  api.ts           |   28.57 |    14.28 |       0 |   28.57 | 10-15
+-------------------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 89.01% ( 3930/4415 )
+Branches     : 83.25% ( 3123/3751 )
+Functions    : 88.95% ( 1337/1503 )
+Lines        : 91.17% ( 3441/3774 )
+================================================================================
