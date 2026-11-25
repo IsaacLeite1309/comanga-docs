@@ -1,0 +1,42 @@
+Comando: npm run lint
+
+> comanga-api@1.0.0 lint
+> eslint . --max-warnings=0
+
+Código: 0
+Comando: npm run test:architecture
+
+> comanga-api@1.0.0 test:architecture
+> node --test scripts/eslint-architecture.test.cjs
+
+✔ aceita API pública por alias, imports internos do próprio domínio e a composição (1565.2541ms)
+✔ recusa imports internos por import, reexport, import dinâmico e tipos (131.4419ms)
+✔ não permite dependência invertida nem por import de tipos (46.7556ms)
+✔ detecta ciclos entre arquivos, inclusive no padrão TypeScript export = usado pela API (72.4646ms)
+✔ não acusa ciclos de execução em imports exclusivamente de tipos (27.4318ms)
+✔ bloqueia require e caminhos calculados que impedem a inspeção completa dos ciclos (81.5963ms)
+✔ recusa arquivo sem classificação mesmo quando usado como ponte (28.8799ms)
+✔ código compartilhado não reexporta domínios e domínio não usa composição como ponte (50.0732ms)
+✔ código de produção não pode usar testes como ponte, nem dentro do próprio domínio (24.4992ms)
+✔ recusa imports não resolvidos e recursos inexistentes (43.5219ms)
+✔ permite recursos estáticos existentes do próprio domínio (22.0618ms)
+✔ comando de limpeza usa a API pública de mídia antes da compilação (48.3701ms)
+✔ a configuração real carregada por npm run lint bloqueia acesso interno (14380.846ms)
+✔ mantém os limites de complexidade, profundidade e tamanho como erros em produção (265.2048ms)
+✔ conta apenas linhas de código no limite de tamanho das funções (117.5976ms)
+✔ restringe as exceções de tamanho a testes e arquivos gerados (85.908ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18418.2129
+Código: 0
+Comando: npm run build
+
+> comanga-api@1.0.0 build
+> tsc
+
+Código: 0
