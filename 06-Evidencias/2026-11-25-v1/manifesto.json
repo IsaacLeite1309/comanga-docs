@@ -1,0 +1,54 @@
+{
+  "data": "2026-11-25",
+  "api_commit": "23b59c48115031b8917bc54f0ee6c1c1b24f981d",
+  "frontend_commit": "81c3e38eaf5e118f0f7bb6f3fb47f2a59290203b",
+  "api_ci": "https://github.com/IsaacLeite1309/comanga-api/actions/runs/45690820953",
+  "frontend_ci": "https://github.com/IsaacLeite1309/comanga-web/actions/runs/45690820696",
+  "escopo": "Execuções concluídas da revisão de 25/11/2026",
+  "arquivos": [
+    {
+      "arquivo": "validacao-publica.md",
+      "sha256": "578cdc2a2424d4886c6b2a4d04c28d84c0d49f55d9e02bcefa18272238418679"
+    },
+    {
+      "arquivo": "api-unitarios.log",
+      "sha256": "8e4905f0adf2da254c93f05b6099dbed8f1236af8271f92589aa71fda86b0743"
+    },
+    {
+      "arquivo": "comanga-api-verificacoes.log",
+      "sha256": "a236fc56feaade7733c2bc3191a854986eab0c07c23f796acbfe30751821de8d"
+    },
+    {
+      "arquivo": "frontend-testes.log",
+      "sha256": "2ba181cd142481ce989d6305e26e01d1ff1748fb4984a949784a209977a191f5"
+    },
+    {
+      "arquivo": "comanga-web-verificacoes.log",
+      "sha256": "5c0ee72b95d9e613b9d3b822f3e5fbb205c2762b25dfbdb450198dc01a84db76"
+    },
+    {
+      "arquivo": "api-integracao-ci.log",
+      "sha256": "ca08b6dd9715fff315def7a45b72a25898e04094feb24f35a6cd9f9ae97c93b4"
+    },
+    {
+      "arquivo": "frontend-ci.log",
+      "sha256": "9a89ebf6367ddb655bca3feb8be82b888ab9b1c5294580c710f5339b055ebf53"
+    },
+    {
+      "arquivo": "api-integracao-neon.log",
+      "sha256": "c612648af96e98e8c7d5e98be4a5cd27b0ff1b9b708167bba8ba1a4923b67e42"
+    },
+    {
+      "arquivo": "api-neon-reteste-migracao.log",
+      "sha256": "43f9c763299355b8ed79e27a1fe8d778554886f0112fceecf72026903905640b"
+    },
+    {
+      "arquivo": "jest-neon-reteste.js.txt",
+      "sha256": "ed78b0d03aa598bb690f3b166894563cb2320b0572157e5b4f93e17aae973f2c"
+    },
+    {
+      "arquivo": "confirmacao-testes-manuais.md",
+      "sha256": "5a488e2f139309c44ce32ca1f671dce90f9b3d9b4562b5665655691dda782953"
+    }
+  ]
+}

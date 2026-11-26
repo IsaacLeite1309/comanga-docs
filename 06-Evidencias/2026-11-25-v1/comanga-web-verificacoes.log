@@ -1,0 +1,63 @@
+Comando: npm run lint
+
+> comanga-web@0.0.0 lint
+> eslint . --max-warnings=0
+
+Código: 0
+Comando: npm run test:architecture
+
+> comanga-web@0.0.0 test:architecture
+> node --test scripts/eslint-architecture.test.cjs
+
+✔ aceita API pública por alias, imports internos do próprio domínio e a composição (2237.8561ms)
+✔ recusa imports internos por import, reexport, import dinâmico e tipos (91.5559ms)
+✔ não permite dependência invertida nem por import de tipos (152.009ms)
+✔ detecta ciclos entre arquivos, inclusive no padrão TypeScript export = usado pela API (360.1467ms)
+✔ não acusa ciclos de execução em imports exclusivamente de tipos (169.1721ms)
+✔ bloqueia require e caminhos calculados que impedem a inspeção completa dos ciclos (685.3255ms)
+✔ recusa arquivo sem classificação mesmo quando usado como ponte (145.1474ms)
+✔ código compartilhado não reexporta domínios e domínio não usa composição como ponte (236.4924ms)
+✔ código de produção não pode usar testes como ponte, nem dentro do próprio domínio (150.6221ms)
+✔ recusa imports não resolvidos e recursos inexistentes (233.7064ms)
+✔ permite recursos estáticos existentes do próprio domínio (124.4489ms)
+✔ a configuração real carregada por npm run lint bloqueia acesso interno (683.9954ms)
+✔ mantém os limites de complexidade, profundidade e tamanho como erros em produção (347.2616ms)
+✔ conta apenas linhas de código no limite de tamanho das funções (110.8007ms)
+✔ restringe as exceções de tamanho a testes e arquivos gerados (151.8682ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6707.1977
+Código: 0
+Comando: npm run build
+
+> comanga-web@0.0.0 build
+> npm run typecheck && vite build
+
+
+> comanga-web@0.0.0 typecheck
+> tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json
+
+vite v8.2.1 building client environment for production...
+[2K
+transforming...✓ 1857 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                           0.96 kB │ gzip:   0.46 kB
+dist/assets/index-CEEghn-_.css           53.35 kB │ gzip:  10.52 kB
+dist/assets/adminCachedGet-CeyJngYQ.js    0.27 kB │ gzip:   0.21 kB
+dist/assets/admin-users-CcwVgbMM.js      14.09 kB │ gzip:   3.78 kB
+dist/assets/admin-catalog-DcLgbs0c.js   135.06 kB │ gzip:  30.54 kB
+dist/assets/index-CF_tBW92.js           591.14 kB │ gzip: 169.24 kB
+
+✓ built in 4.73s
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+Código: 0

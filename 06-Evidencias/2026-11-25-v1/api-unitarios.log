@@ -1,0 +1,142 @@
+
+> comanga-api@1.0.0 test:coverage:unit
+> npm run test:unit -- --coverage
+
+
+> comanga-api@1.0.0 test:unit
+> jest --config jest.unit.config.js --runInBand --coverage
+
+--------------------------------|---------|----------|---------|---------|-------------------------------------------------------
+File                            | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                     
+--------------------------------|---------|----------|---------|---------|-------------------------------------------------------
+All files                       |   92.01 |     83.7 |   91.15 |   93.52 |                                                       
+ src                            |   97.61 |       80 |     100 |   97.61 |                                                       
+  app.ts                        |   97.61 |       80 |     100 |   97.61 | 44                                                    
+ src/commands                   |       0 |      100 |       0 |       0 |                                                       
+  cleanupDiscardedCovers.ts     |       0 |      100 |       0 |       0 | 1-6                                                   
+ src/database                   |   82.35 |       65 |      75 |      80 |                                                       
+  index.ts                      |   82.35 |       65 |      75 |      80 | 16,35-36                                              
+ src/errors                     |     100 |      100 |     100 |     100 |                                                       
+  ApplicationError.ts           |     100 |      100 |     100 |     100 |                                                       
+ src/infrastructure             |   84.61 |      100 |       0 |   84.61 |                                                       
+  container.ts                  |   84.61 |      100 |       0 |   84.61 | 11-12                                                 
+ src/infrastructure/database    |     100 |      100 |     100 |     100 |                                                       
+  prismaConnectionUrl.ts        |     100 |      100 |     100 |     100 |                                                       
+ src/infrastructure/logging     |   83.33 |       85 |      75 |   86.66 |                                                       
+  structuredLogger.ts           |   83.33 |       85 |      75 |   86.66 | 24,44                                                 
+ src/infrastructure/mail        |     100 |      100 |     100 |     100 |                                                       
+  ResendMailService.ts          |     100 |      100 |     100 |     100 |                                                       
+ src/infrastructure/media       |   89.63 |    88.57 |   86.11 |   92.46 |                                                       
+  CoverImageProcessor.ts        |   88.67 |    89.47 |     100 |   91.83 | 60,72,82,130                                          
+  R2MediaStorage.ts             |   96.15 |    84.61 |     100 |   95.83 | 55                                                    
+  RemoteImageDownloader.ts      |   86.88 |    86.66 |   73.68 |   90.74 | 146-165,256                                           
+  mediaPublicUrl.ts             |     100 |      100 |     100 |     100 |                                                       
+ src/infrastructure/operations  |   80.76 |    77.14 |   76.47 |   83.09 |                                                       
+  gracefulShutdown.ts           |   76.47 |       60 |    62.5 |   83.33 | 38-40,58-59                                           
+  healthRouter.ts               |   84.09 |       84 |   88.88 |   82.92 | 36-44,111,130-133                                     
+ src/infrastructure/rate-limit  |     100 |      100 |     100 |     100 |                                                       
+  MemoryRateLimitStore.ts       |     100 |      100 |     100 |     100 |                                                       
+ src/middlewares                |   91.07 |    82.75 |     100 |     100 |                                                       
+  errorHandler.ts               |   83.87 |    83.33 |     100 |     100 | 12-15,17,42-43                                        
+  notFoundHandler.ts            |     100 |      100 |     100 |     100 |                                                       
+  requestContext.ts             |     100 |      100 |     100 |     100 |                                                       
+  requestLogger.ts              |     100 |    78.57 |     100 |     100 | 23-28                                                 
+ src/modules/admin/options      |   91.13 |    82.22 |   86.66 |   90.81 |                                                       
+  constants.ts                  |     100 |      100 |     100 |     100 |                                                       
+  index.ts                      |    87.7 |    82.35 |      80 |    87.5 | 70-73,100-106,192,201,211,217,307,317,335,353,379,385 
+  mappers.ts                    |     100 |      100 |     100 |     100 |                                                       
+  queries.ts                    |     100 |      100 |     100 |     100 |                                                       
+  schemas.ts                    |     100 |      100 |     100 |     100 |                                                       
+  services.ts                   |   93.33 |    71.42 |   93.33 |   92.85 | 71-72,99                                              
+ src/modules/admin/users        |   98.52 |    93.75 |     100 |   98.43 |                                                       
+  domain.ts                     |     100 |      100 |     100 |     100 |                                                       
+  index.ts                      |   97.77 |    91.66 |     100 |   97.67 | 126                                                   
+ src/modules/auth               |   96.23 |    87.96 |    97.4 |   97.47 |                                                       
+  AuthNotificationService.ts    |      75 |      100 |   66.66 |      75 | 16                                                    
+  accountRules.ts               |     100 |      100 |     100 |     100 |                                                       
+  attemptRateLimiter.ts         |   96.55 |     90.9 |     100 |     100 | 43,50                                                 
+  authorization.ts              |     100 |      100 |     100 |     100 |                                                       
+  handlers.ts                   |   91.66 |    82.53 |     100 |   94.33 | 29,108,142,186,254,268                                
+  index.ts                      |     100 |      100 |     100 |     100 |                                                       
+  loginRateLimiter.ts           |     100 |    33.33 |     100 |     100 | 14                                                    
+  passwordChangeRateLimiter.ts  |    92.3 |      100 |      50 |    92.3 | 24                                                    
+  passwordRecovery.ts           |     100 |      100 |     100 |     100 |                                                       
+  profiles.ts                   |   98.38 |       90 |     100 |     100 | 26                                                    
+  recoveryRateLimiter.ts        |     100 |     87.5 |     100 |     100 | 8                                                     
+  session.ts                    |   93.33 |     62.5 |     100 |   96.15 | 13                                                    
+  sessionMiddleware.ts          |   98.03 |    93.54 |     100 |   97.72 | 80                                                    
+ src/modules/catalog            |   97.74 |    87.97 |   94.56 |   97.96 |                                                       
+  constants.ts                  |     100 |      100 |     100 |     100 |                                                       
+  index.ts                      |     100 |      100 |     100 |     100 |                                                       
+  mappers.ts                    |   94.52 |    81.35 |      90 |   93.93 | 27-33                                                 
+  queries.ts                    |   95.83 |       75 |    87.5 |   95.65 | 108                                                   
+  schemas.ts                    |     100 |      100 |     100 |     100 |                                                       
+  shared.ts                     |     100 |      100 |     100 |     100 |                                                       
+  validators.ts                 |   95.65 |    91.89 |     100 |   97.67 | 84                                                    
+  visibilityProtection.ts       |     100 |      100 |     100 |     100 |                                                       
+  writeLock.ts                  |     100 |      100 |     100 |     100 |                                                       
+ src/modules/catalog/editions   |   89.36 |    83.33 |   92.85 |   91.85 |                                                       
+  index.ts                      |   89.36 |    83.33 |   92.85 |   91.85 | 59,182-193,225,281                                    
+ src/modules/catalog/volumes    |   93.78 |    79.71 |     100 |   97.27 |                                                       
+  index.ts                      |   93.83 |    79.23 |     100 |   97.08 | 97,260,319,366                                        
+  releaseDate.ts                |   93.33 |     87.5 |     100 |     100 | 26                                                    
+ src/modules/catalog/works      |   88.72 |    80.75 |   95.23 |   93.52 |                                                       
+  create.ts                     |   86.95 |    80.48 |     100 |   89.47 | 34,37,59,162-164                                      
+  delete.ts                     |     100 |      100 |     100 |     100 |                                                       
+  index.ts                      |     100 |      100 |     100 |     100 |                                                       
+  read.ts                       |   93.93 |       92 |     100 |   93.54 | 87,104                                                
+  update.ts                     |   82.06 |    72.44 |   89.28 |   91.15 | 39,57-58,69,105,108,141,144,207-209                   
+  validation.ts                 |     100 |      100 |     100 |     100 |                                                       
+  visibility.ts                 |   96.87 |    95.23 |     100 |     100 | 50                                                    
+  workSlug.ts                   |     100 |      100 |     100 |     100 |                                                       
+ src/modules/media              |   92.42 |    85.07 |   80.64 |    92.3 |                                                       
+  CoverImportService.ts         |   93.54 |       70 |   85.71 |      96 | 59                                                    
+  CoverRemovalService.ts        |     100 |      100 |     100 |     100 |                                                       
+  PrismaMediaAssetRepository.ts |     100 |      100 |     100 |     100 |                                                       
+  coverAssetLifecycle.ts        |   96.77 |      100 |     100 |      96 | 56                                                    
+  handlers.ts                   |   96.29 |    95.83 |     100 |   96.15 | 20                                                    
+  index.ts                      |   68.42 |        0 |    37.5 |   68.42 | 22-42                                                 
+ src/modules/personal-catalog   |   98.81 |    90.36 |     100 |     100 |                                                       
+  index.ts                      |   98.73 |    95.65 |     100 |     100 | 27                                                    
+  mutations.ts                  |   97.46 |    85.71 |     100 |     100 | 81-101,114                                            
+  queries.ts                    |     100 |      100 |     100 |     100 |                                                       
+  readers.ts                    |     100 |       90 |     100 |     100 | 78,104,113                                            
+  schemas.ts                    |     100 |      100 |     100 |     100 |                                                       
+  views.ts                      |     100 |      100 |     100 |     100 |                                                       
+ src/modules/public-catalog     |   86.19 |    80.68 |   84.04 |   86.27 |                                                       
+  adultContentPolicy.ts         |     100 |      100 |     100 |     100 |                                                       
+  authors.ts                    |     100 |     87.5 |     100 |     100 | 47                                                    
+  calendar.ts                   |     100 |      100 |     100 |     100 |                                                       
+  constants.ts                  |     100 |      100 |     100 |     100 |                                                       
+  editions.ts                   |   56.86 |       50 |      40 |   58.33 | 19-89                                                 
+  index.ts                      |     100 |      100 |     100 |     100 |                                                       
+  mappers.ts                    |   83.33 |       76 |   79.31 |   86.04 | 18-20,52,69,143                                       
+  options.ts                    |   33.33 |      100 |       0 |   36.84 | 21-65                                                 
+  personalState.ts              |     100 |    93.75 |     100 |     100 | 41,47                                                 
+  queries.ts                    |   93.75 |       90 |     100 |   93.75 | 174,182,195,199                                       
+  response.ts                   |     100 |      100 |     100 |     100 |                                                       
+  schemas.ts                    |     100 |    83.33 |     100 |     100 | 12                                                    
+  volumes.ts                    |     100 |       90 |     100 |     100 | 34                                                    
+  works.ts                      |   72.22 |     62.5 |      80 |   69.69 | 15-42                                                 
+ src/modules/users              |   84.39 |    66.21 |     100 |   86.27 |                                                       
+  accountSettings.ts            |   82.75 |    55.55 |     100 |   86.84 | 73,93,114-126,144                                     
+  handlers.ts                   |   82.08 |       70 |     100 |   82.53 | 29,40,60,73-76,88,118-122                             
+  index.ts                      |     100 |      100 |     100 |     100 |                                                       
+  ownProfileView.ts             |     100 |      100 |     100 |     100 |                                                       
+ src/routes                     |     100 |      100 |     100 |     100 |                                                       
+  adminRoutes.ts                |     100 |      100 |     100 |     100 |                                                       
+  authRoutes.ts                 |     100 |      100 |     100 |     100 |                                                       
+  personalCatalogRoutes.ts      |     100 |      100 |     100 |     100 |                                                       
+  publicCatalogRoutes.ts        |     100 |      100 |     100 |     100 |                                                       
+  userRoutes.ts                 |     100 |      100 |     100 |     100 |                                                       
+ src/utils                      |     100 |      100 |     100 |     100 |                                                       
+  authorSlug.ts                 |     100 |      100 |     100 |     100 |                                                       
+  domainOptionCodes.ts          |     100 |      100 |     100 |     100 |                                                       
+  mailer.ts                     |     100 |      100 |     100 |     100 |                                                       
+--------------------------------|---------|----------|---------|---------|-------------------------------------------------------
+
+Test Suites: 57 passed, 57 total
+Tests:       792 passed, 792 total
+Snapshots:   0 total
+Time:        45.833 s
+Ran all test suites.
